@@ -11,14 +11,16 @@ const Expense = {
    */
   async create(req, res) {
     const text = `INSERT INTO
-      expenses(id, amount, created_date, modified_date)
-      VALUES($1, $2, $3, $4)
+      expenses(id, amount, created_date, modified_date,description,category)
+      VALUES($1, $2, $3, $4, $5, (SELECT id FROM categories WHERE name=$6))
       returning *`;
     const values = [
       uuidv4(),
       req.body.amount,
       moment(new Date()),
-      moment(new Date())
+      moment(new Date()),
+      req.body.description,
+      req.body.category
     ];
 
     try {
