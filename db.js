@@ -14,17 +14,38 @@ pool.on('connect', () => {
 /**
  * Create Tables
  */
-const createTables = () => {
+const createExpenseTable = () => {
   const queryText =
     `CREATE TABLE IF NOT EXISTS
       expenses(
         id UUID PRIMARY KEY,
         amount NUMERIC(12,2) NOT NULL,
         created_date TIMESTAMP,
-        modified_date TIMESTAMP
+        modified_date TIMESTAMP,
+        description text,
+        category integer REFERENCES categories(id)
       )`;
 
   pool.query(queryText)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+}
+
+const createCategoryTable = () => {
+  const categoryTable =
+  `CREATE TABLE IF NOT EXISTS
+    categories(
+      id SERIAL PRIMARY KEY,
+      name varchar(64)
+    )`;
+
+  pool.query(categoryTable)
     .then((res) => {
       console.log(res);
       pool.end();
@@ -57,7 +78,8 @@ pool.on('remove', () => {
 });
 
 module.exports = {
-  createTables,
+  createExpenseTable,
+  createCategoryTable,
   dropTables
 };
 
