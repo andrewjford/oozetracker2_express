@@ -19,5 +19,5 @@ app.delete('/api/v1/expenses/:id', Expense.delete);
 app.get('/api/v1/categories', Category.getAll);
 app.post('/api/v1/categories', Category.create);
 
-app.listen(3000)
-console.log('app running on port ', 3000);
+app.listen(3001)
+console.log('app running on port ', 3001);
