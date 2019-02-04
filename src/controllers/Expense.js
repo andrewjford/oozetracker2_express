@@ -70,6 +70,7 @@ const Expense = {
    * @returns {object} updated expense
    */
   async update(req, res) {
+    console.log(req);
     const findOneQuery = 'SELECT * FROM expenses WHERE id=$1';
     const updateOneQuery =`UPDATE expenses
       SET amount=$1,modified_date=$2
@@ -104,6 +105,20 @@ const Expense = {
         return res.status(404).send({'message': 'expense not found'});
       }
       return res.status(204).send({ 'message': 'deleted' });
+    } catch(error) {
+      return res.status(400).send(error);
+    }
+  },
+
+  async monthlyTotals(req, res) {
+    const monthStart = req.body.monthStart || '2019-02-01';
+    const monthEnd = req.body.monthEnd || '2019-03-01';
+    const findAllQuery = 'SELECT c.name, SUM(amount)' +
+      ' FROM expenses e LEFT JOIN categories c ON e.category = c.id'+
+      ` WHERE created_date >= ${monthStart} AND created_date < ${monthEnd} GROUP BY c.name;';`
+    try {
+      const { rows, rowCount } = await db.query(findAllQuery);
+      return res.status(200).send({ rows, rowCount });
     } catch(error) {
       return res.status(400).send(error);
     }
