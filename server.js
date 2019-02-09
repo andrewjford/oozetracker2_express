@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import express from 'express';
 import Expense from './src/controllers/Expense';
 import Category from './src/controllers/Category';
+import Report from './src/controllers/Report';
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.delete('/api/v1/expenses/:id', Expense.delete);
 
 app.get('/api/v1/categories', Category.getAll);
 app.post('/api/v1/categories', Category.create);
+
+app.post('/api/v1/reports/monthly', Report.getMonthly);
 
 app.listen(3001)
 console.log('app running on port ', 3001);
