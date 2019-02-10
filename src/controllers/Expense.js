@@ -11,14 +11,15 @@ const Expense = {
    */
   async create(req, res) {
     const text = `INSERT INTO
-      expenses(id, amount, created_date, modified_date,description,category)
-      VALUES($1, $2, $3, $4, $5, $6)
+      expenses(id, amount, created_date, modified_date, date, description, category)
+      VALUES($1, $2, $3, $4, $5, $6, $7)
       returning *`;
     const values = [
       uuidv4(),
       req.body.amount,
       moment(new Date()),
       moment(new Date()),
+      moment(new Date(req.body.date)),
       req.body.description,
       req.body.category
     ];
@@ -70,11 +71,10 @@ const Expense = {
    * @returns {object} updated expense
    */
   async update(req, res) {
-    console.log(req);
     const findOneQuery = 'SELECT * FROM expenses WHERE id=$1';
     const updateOneQuery =`UPDATE expenses
-      SET amount=$1,modified_date=$2
-      WHERE id=$3 returning *`;
+      SET amount=$1,modified_date=$2, date=$3, description=$4, category=$5
+      WHERE id=$6 returning *`;
     try {
       const { rows } = await db.query(findOneQuery, [req.params.id]);
       if(!rows[0]) {
@@ -83,6 +83,9 @@ const Expense = {
       const values = [
         req.body.amount || rows[0].amount,
         moment(new Date()),
+        moment(new Date(req.body.date)),
+        req.body.description,
+        req.body.category,
         req.params.id
       ];
       const response = await db.query(updateOneQuery, values);
