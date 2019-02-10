@@ -31,12 +31,7 @@ const Expense = {
       return res.status(400).send(error);
     }
   },
-  /**
-   * Get All Expense
-   * @param {object} req 
-   * @param {object} res 
-   * @returns {object} expenses array
-   */
+
   async getAll(req, res) {
     const findAllQuery = 'SELECT * FROM expenses';
     try {
@@ -46,14 +41,12 @@ const Expense = {
       return res.status(400).send(error);
     }
   },
-  /**
-   * Get A Expense
-   * @param {object} req 
-   * @param {object} res
-   * @returns {object} expense object
-   */
+
   async getOne(req, res) {
-    const text = 'SELECT * FROM expenses WHERE id = $1';
+    const text = `SELECT e.*, c.name AS category_name 
+      FROM expenses e 
+      LEFT JOIN categories c ON e.category = c.id
+      WHERE e.id = $1`;
     try {
       const { rows } = await db.query(text, [req.params.id]);
       if (!rows[0]) {
@@ -64,12 +57,7 @@ const Expense = {
       return res.status(400).send(error)
     }
   },
-  /**
-   * Update A Expense
-   * @param {object} req 
-   * @param {object} res 
-   * @returns {object} updated expense
-   */
+
   async update(req, res) {
     const findOneQuery = 'SELECT * FROM expenses WHERE id=$1';
     const updateOneQuery =`UPDATE expenses
