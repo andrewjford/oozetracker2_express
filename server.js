@@ -20,6 +20,7 @@ app.delete('/api/v1/expenses/:id', Expense.delete);
 app.get('/api/v1/categories', Category.getAll);
 app.post('/api/v1/categories', Category.create);
 app.put('/api/v1/categories/:id', Category.update);
+app.delete('/api/v1/categories/:id', Category.delete);
 
 app.post('/api/v1/reports/monthly', Report.getMonthly);
 
