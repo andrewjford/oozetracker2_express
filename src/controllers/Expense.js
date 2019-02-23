@@ -115,8 +115,10 @@ const Expense = {
   },
 
   async getRecentExpenses(req, res) {
-    const getQuery = `SELECT e.*, c.name FROM expenses e ` +
-      `LEFT JOIN categories c ON e.category = c.id ORDER BY e.date DESC LIMIT 10`;
+    const getQuery = `
+      SELECT e.*, c.name FROM expenses e 
+      LEFT JOIN categories c ON e.category = c.id 
+      ORDER BY e.date DESC, e.created_date DESC LIMIT 10`;
     try {
       const { rows, rowCount } = await db.query(getQuery);
       return res.status(200).send({ rows, rowCount });
