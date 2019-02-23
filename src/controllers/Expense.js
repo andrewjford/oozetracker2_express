@@ -10,10 +10,13 @@ const Expense = {
    * @returns {object} expense object 
    */
   async create(req, res) {
-    const text = `INSERT INTO
-      expenses(id, amount, created_date, modified_date, date, description, category)
-      VALUES($1, $2, $3, $4, $5, $6, $7)
-      returning *`;
+    const text = `WITH inserted AS (INSERT INTO
+        expenses(id, amount, created_date, modified_date, date, description, category)
+        VALUES($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *)
+      SELECT inserted.*, c.name AS name
+      FROM inserted
+      INNER JOIN categories c ON inserted.category = c.id`;
     const values = [
       uuidv4(),
       req.body.amount,
@@ -28,6 +31,7 @@ const Expense = {
       const { rows } = await db.query(text, values);
       return res.status(201).send(rows[0]);
     } catch(error) {
+      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -112,7 +116,7 @@ const Expense = {
 
   async getRecentExpenses(req, res) {
     const getQuery = `SELECT e.*, c.name FROM expenses e ` +
-      `LEFT JOIN categories c ON e.category = c.id ORDER BY e.date LIMIT 10`;
+      `LEFT JOIN categories c ON e.category = c.id ORDER BY e.date DESC LIMIT 10`;
     try {
       const { rows, rowCount } = await db.query(getQuery);
       return res.status(200).send({ rows, rowCount });
