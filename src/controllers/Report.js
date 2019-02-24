@@ -5,20 +5,24 @@ import db from '../db';
 const Report = {
 
   async getMonthly(req, res) {
-    const nextMonth = parseInt(req.body.month) + 1;
-    const text = `
+    const requestedMonth = new Date(req.body.year, req.body.month);
+    const nextMonth = new Date(req.body.year, req.body.month);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    const queryString = `
       SELECT SUM(e.amount), c.id, c.name
       FROM expenses e 
       LEFT JOIN categories c ON e.category = c.id
-      WHERE e.created_date >= $1 AND
-        e.created_date < $2
+      WHERE e.date >= $1 AND
+        e.date < $2
       GROUP BY c.id`;
     const values = [
-      `${req.body.year}-${req.body.month}-01`,
-      `${req.body.year}-${nextMonth.toString()}-01`,
+      `${requestedMonth.getFullYear()}-${requestedMonth.getMonth()+1}-01`,
+      `${nextMonth.getFullYear()}-${nextMonth.getMonth()+1}-01`,
     ];
+
     try {
-      const { rows, rowCount } = await db.query(text, values);
+      const { rows, rowCount } = await db.query(queryString, values);
       return res.status(200).send({
         rows, 
         rowCount,
@@ -26,6 +30,7 @@ const Report = {
         year: req.body.year,
       });
     } catch(error) {
+      console.log(error)
       return res.status(400).send(error)
     }
   },

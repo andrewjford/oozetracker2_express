@@ -106,20 +106,6 @@ const Expense = {
     }
   },
 
-  async monthlyTotals(req, res) {
-    const monthStart = req.body.monthStart || '2019-02-01';
-    const monthEnd = req.body.monthEnd || '2019-03-01';
-    const findAllQuery = `SELECT c.name, SUM(amount)
-      FROM expenses e LEFT JOIN categories c ON e.category = c.id
-      WHERE date >= ${monthStart} AND date < ${monthEnd} GROUP BY c.name;`;
-    try {
-      const { rows, rowCount } = await db.query(findAllQuery);
-      return res.status(200).send({ rows, rowCount });
-    } catch(error) {
-      return res.status(400).send(error);
-    }
-  },
-
   async getRecentExpenses(req, res) {
     const getQuery = `
       SELECT e.*, c.name FROM expenses e 
