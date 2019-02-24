@@ -7,9 +7,9 @@ const Report = {
   async getMonthly(req, res) {
     const nextMonth = parseInt(req.body.month) + 1;
     const text = `
-      SELECT SUM(e.amount), c.id 
+      SELECT SUM(e.amount), c.id, c.name
       FROM expenses e 
-      RIGHT JOIN categories c ON e.category = c.id
+      LEFT JOIN categories c ON e.category = c.id
       WHERE e.created_date >= $1 AND
         e.created_date < $2
       GROUP BY c.id`;
