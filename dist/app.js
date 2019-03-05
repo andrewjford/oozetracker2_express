@@ -27,19 +27,19 @@ app.use(_express2.default.json());
 app.get('/', function (req, res) {
   return res.status(200).send({ 'message': 'YAY! Congratulations! Your first endpoint is working' });
 });
-app.post('/api/v1/expenses', _Expense2.default.create);
-app.get('/api/v1/expenses', _Expense2.default.getAll);
-app.get('/api/v1/expenses/:id', _Expense2.default.getOne);
-app.put('/api/v1/expenses/:id', _Expense2.default.update);
-app.delete('/api/v1/expenses/:id', _Expense2.default.delete);
+// app.post('/api/v1/expenses', Expense.create);
+// app.get('/api/v1/expenses', Expense.getAll);
+// app.get('/api/v1/expenses/:id', Expense.getOne);
+// app.put('/api/v1/expenses/:id', Expense.update);
+// app.delete('/api/v1/expenses/:id', Expense.delete);
 
-app.get('/api/v1/categories', _Category2.default.getAll);
-app.post('/api/v1/categories', _Category2.default.create);
-app.put('/api/v1/categories/:id', _Category2.default.update);
-app.delete('/api/v1/categories/:id', _Category2.default.delete);
+// app.get('/api/v1/categories', Category.getAll);
+// app.post('/api/v1/categories', Category.create);
+// app.put('/api/v1/categories/:id', Category.update);
+// app.delete('/api/v1/categories/:id', Category.delete);
 
-app.get('/api/v1/reports/recent', _Expense2.default.getRecentExpenses);
-app.post('/api/v1/reports/monthly', _Report2.default.getMonthly);
+// app.get('/api/v1/reports/recent', Expense.getRecentExpenses);
+// app.post('/api/v1/reports/monthly', Report.getMonthly);
 
 app.listen(3001);
 console.log('app running on port ', 3001);
