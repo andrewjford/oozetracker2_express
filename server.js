@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import express from 'express';
 import Expense from './src/controllers/Expense';
 import Category from './src/controllers/Category';
