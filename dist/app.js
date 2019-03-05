@@ -6,15 +6,15 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
-var _Expense = require('../src/controllers/Expense');
+var _Expense = require('./controllers/Expense');
 
 var _Expense2 = _interopRequireDefault(_Expense);
 
-var _Category = require('../src/controllers/Category');
+var _Category = require('./controllers/Category');
 
 var _Category2 = _interopRequireDefault(_Category);
 
-var _Report = require('../src/controllers/Report');
+var _Report = require('./controllers/Report');
 
 var _Report2 = _interopRequireDefault(_Report);
 

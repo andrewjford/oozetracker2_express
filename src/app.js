@@ -1,8 +1,8 @@
 import "@babel/polyfill";
 import express from 'express';
-import Expense from './src/controllers/Expense';
-import Category from './src/controllers/Category';
-import Report from './src/controllers/Report';
+import Expense from './controllers/Expense';
+import Category from './controllers/Category';
+import Report from './controllers/Report';
 
 const app = express();
 
