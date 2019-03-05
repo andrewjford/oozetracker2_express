@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "start": "npm run build && node dist/app.js",
+    "serve": "node dist/app.js",
     "dev-start": "babel-watch src/app.js"
   },
   "author": "Andrew Ford",
