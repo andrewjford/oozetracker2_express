@@ -4,11 +4,16 @@ import jwt from 'jsonwebtoken';
 
 const User = {
   async create(req, res) {
+    if (!req.body.name, !req.body.email, !req.body.password) {
+      return res.status(400).send({message: 'Missing required params'});
+    }
+
     const sqlString = `
       INSERT INTO
         users(name, email, password)
       VALUES($1, $2, $3)
       RETURNING id, name, email`;
+    
     const values = [
       req.body.name,
       req.body.email,
