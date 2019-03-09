@@ -29,13 +29,21 @@ var User = {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              if (!(!req.body.name, !req.body.email, !req.body.password)) {
+                _context.next = 2;
+                break;
+              }
+
+              return _context.abrupt('return', res.status(400).send({ message: 'Missing required params' }));
+
+            case 2:
               sqlString = '\n      INSERT INTO\n        users(name, email, password)\n      VALUES($1, $2, $3)\n      RETURNING id, name, email';
               values = [req.body.name, req.body.email, _bcryptjs2.default.hashSync(req.body.password, 10)];
-              _context.prev = 2;
-              _context.next = 5;
+              _context.prev = 4;
+              _context.next = 7;
               return _db2.default.query(sqlString, values);
 
-            case 5:
+            case 7:
               _ref2 = _context.sent;
               rows = _ref2.rows;
               tokenExpiration = 24 * 60 * 60;
@@ -43,19 +51,19 @@ var User = {
               return _context.abrupt('return', res.status(201).send({
                 user: rows[0], token: token, tokenExpiration: tokenExpiration }));
 
-            case 12:
-              _context.prev = 12;
-              _context.t0 = _context['catch'](2);
+            case 14:
+              _context.prev = 14;
+              _context.t0 = _context['catch'](4);
 
               console.log(_context.t0);
               return _context.abrupt('return', res.status(400).send(_context.t0));
 
-            case 16:
+            case 18:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, this, [[2, 12]]);
+      }, _callee, this, [[4, 14]]);
     }));
 
     function create(_x, _x2) {
