@@ -1,3 +1,2 @@
-- add auth layer
 - update endpoints to be user specific
 - sanitize input
