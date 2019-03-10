@@ -10,7 +10,7 @@ const User = {
 
     const sqlString = `
       INSERT INTO
-        users(name, email, password)
+        accounts(name, email, password)
       VALUES($1, $2, $3)
       RETURNING id, name, email`;
     
@@ -34,7 +34,7 @@ const User = {
 
   async login(req, res) {
     const sqlString = `SELECT id, password 
-      FROM users 
+      FROM accounts 
       WHERE email = $1`;
     try {
       const { rows } = await db.query(sqlString, [req.body.email]);
