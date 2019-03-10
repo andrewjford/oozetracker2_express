@@ -8,9 +8,9 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _db = require('../db');
+var _dbService = require('../services/dbService');
 
-var _db2 = _interopRequireDefault(_db);
+var _dbService2 = _interopRequireDefault(_dbService);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26,11 +26,11 @@ var Category = {
           switch (_context.prev = _context.next) {
             case 0:
               console.log(req);
-              text = 'INSERT INTO\n      categories(name)\n      VALUES($1)\n      RETURNING *';
-              values = [req.body.name];
+              text = 'INSERT INTO\n      categories(name, accountId)\n      VALUES($1, $2)\n      RETURNING *';
+              values = [req.body.name, req.accountId];
               _context.prev = 3;
               _context.next = 6;
-              return _db2.default.query(text, values);
+              return _dbService2.default.query(text, values);
 
             case 6:
               _ref2 = _context.sent;
@@ -64,10 +64,10 @@ var Category = {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              findAllQuery = 'SELECT * FROM categories';
+              findAllQuery = 'SELECT * FROM categories WHERE account_id = $1';
               _context2.prev = 1;
               _context2.next = 4;
-              return _db2.default.query(findAllQuery);
+              return _dbService2.default.query(findAllQuery, [req.accountId]);
 
             case 4:
               _ref4 = _context2.sent;
@@ -102,10 +102,10 @@ var Category = {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              text = 'SELECT * FROM categories WHERE id = $1';
+              text = 'SELECT * FROM categories WHERE id = $1 AND account_id = $2';
               _context3.prev = 1;
               _context3.next = 4;
-              return _db2.default.query(text, [req.params.id]);
+              return _dbService2.default.query(text, [req.params.id, req.accountId]);
 
             case 4:
               _ref6 = _context3.sent;
@@ -148,11 +148,11 @@ var Category = {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              findOneQuery = 'SELECT * FROM categories WHERE id=$1';
-              updateOneQuery = 'UPDATE categories\n      SET name=$1,modified_date=$2\n      WHERE id=$3 returning *';
+              findOneQuery = 'SELECT * FROM categories WHERE id = $1 AND account_id = $2';
+              updateOneQuery = 'UPDATE categories\n      SET name = $1, modified_date = $2\n      WHERE id = $3 RETURNING *';
               _context4.prev = 2;
               _context4.next = 5;
-              return _db2.default.query(findOneQuery, [req.params.id]);
+              return _dbService2.default.query(findOneQuery, [req.params.id, req.accountId]);
 
             case 5:
               _ref8 = _context4.sent;
@@ -168,7 +168,7 @@ var Category = {
             case 9:
               values = [req.body.name || rows[0].name, (0, _moment2.default)(new Date()), req.params.id];
               _context4.next = 12;
-              return _db2.default.query(updateOneQuery, values);
+              return _dbService2.default.query(updateOneQuery, values);
 
             case 12:
               response = _context4.sent;
@@ -201,10 +201,10 @@ var Category = {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              deleteQuery = 'DELETE FROM categories WHERE id=$1 returning *';
+              deleteQuery = 'DELETE FROM categories WHERE id = $1 AND account_id = $2 RETURNING *';
               _context5.prev = 1;
               _context5.next = 4;
-              return _db2.default.query(deleteQuery, [req.params.id]);
+              return _dbService2.default.query(deleteQuery, [req.params.id, req.accountId]);
 
             case 4:
               _ref10 = _context5.sent;

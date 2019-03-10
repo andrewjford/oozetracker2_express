@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _db = require('../db');
+var _dbService = require('../services/dbService');
 
-var _db2 = _interopRequireDefault(_db);
+var _dbService2 = _interopRequireDefault(_dbService);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26,11 +26,11 @@ var Report = {
 
               nextMonth.setMonth(nextMonth.getMonth() + 1);
 
-              queryString = '\n      SELECT SUM(e.amount), c.id, c.name\n      FROM expenses e \n      LEFT JOIN categories c ON e.category = c.id\n      WHERE e.date >= $1 AND\n        e.date < $2\n      GROUP BY c.id';
-              values = [requestedMonth.getFullYear() + '-' + (requestedMonth.getMonth() + 1) + '-01', nextMonth.getFullYear() + '-' + (nextMonth.getMonth() + 1) + '-01'];
+              queryString = '\n      SELECT SUM(e.amount), c.id, c.name\n      FROM expenses e \n      LEFT JOIN categories c ON e.category = c.id\n      WHERE e.date >= $1 AND\n        e.date < $2 AND\n        e.account_id = $3\n      GROUP BY c.id';
+              values = [requestedMonth.getFullYear() + '-' + (requestedMonth.getMonth() + 1) + '-01', nextMonth.getFullYear() + '-' + (nextMonth.getMonth() + 1) + '-01', req.accountId];
               _context.prev = 5;
               _context.next = 8;
-              return _db2.default.query(queryString, values);
+              return _dbService2.default.query(queryString, values);
 
             case 8:
               _ref2 = _context.sent;

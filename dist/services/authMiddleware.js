@@ -25,7 +25,7 @@ var authMiddleware = {
             message: 'Token is not valid'
           });
         } else {
-          req.decoded = decoded;
+          req.accountId = decoded.id;
           next();
         }
       });

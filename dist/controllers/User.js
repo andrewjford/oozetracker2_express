@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _db = require('../db');
+var _dbService = require('../services/dbService');
 
-var _db2 = _interopRequireDefault(_db);
+var _dbService2 = _interopRequireDefault(_dbService);
 
 var _bcryptjs = require('bcryptjs');
 
@@ -37,11 +37,11 @@ var User = {
               return _context.abrupt('return', res.status(400).send({ message: 'Missing required params' }));
 
             case 2:
-              sqlString = '\n      INSERT INTO\n        users(name, email, password)\n      VALUES($1, $2, $3)\n      RETURNING id, name, email';
+              sqlString = '\n      INSERT INTO\n        accounts(name, email, password)\n      VALUES($1, $2, $3)\n      RETURNING id, name, email';
               values = [req.body.name, req.body.email, _bcryptjs2.default.hashSync(req.body.password, 10)];
               _context.prev = 4;
               _context.next = 7;
-              return _db2.default.query(sqlString, values);
+              return _dbService2.default.query(sqlString, values);
 
             case 7:
               _ref2 = _context.sent;
@@ -80,10 +80,10 @@ var User = {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              sqlString = 'SELECT id, password \n      FROM users \n      WHERE email = $1';
+              sqlString = 'SELECT id, password \n      FROM accounts \n      WHERE email = $1';
               _context2.prev = 1;
               _context2.next = 4;
-              return _db2.default.query(sqlString, [req.body.email]);
+              return _dbService2.default.query(sqlString, [req.body.email]);
 
             case 4:
               _ref4 = _context2.sent;

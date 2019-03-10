@@ -12,21 +12,15 @@ var _v = require('uuid/v4');
 
 var _v2 = _interopRequireDefault(_v);
 
-var _db = require('../db');
+var _dbService = require('../services/dbService');
 
-var _db2 = _interopRequireDefault(_db);
+var _dbService2 = _interopRequireDefault(_dbService);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 var Expense = {
-  /**
-   * Create A Expense
-   * @param {object} req 
-   * @param {object} res
-   * @returns {object} expense object 
-   */
   create: function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res) {
       var text, values, _ref2, rows;
@@ -35,11 +29,11 @@ var Expense = {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              text = 'WITH inserted AS (INSERT INTO\n        expenses(id, amount, created_date, modified_date, date, description, category)\n        VALUES($1, $2, $3, $4, $5, $6, $7)\n        RETURNING *)\n      SELECT inserted.*, c.name AS name\n      FROM inserted\n      INNER JOIN categories c ON inserted.category = c.id';
-              values = [(0, _v2.default)(), req.body.amount, (0, _moment2.default)(new Date()), (0, _moment2.default)(new Date()), (0, _moment2.default)(new Date(req.body.date)), req.body.description, req.body.category];
+              text = 'WITH inserted AS (INSERT INTO\n        expenses(id, amount, created_date, modified_date, date, description, category, account_id)\n        VALUES($1, $2, $3, $4, $5, $6, $7, $8)\n        RETURNING *)\n      SELECT inserted.*, c.name AS name\n      FROM inserted\n      INNER JOIN categories c ON inserted.category = c.id';
+              values = [(0, _v2.default)(), req.body.amount, (0, _moment2.default)(new Date()), (0, _moment2.default)(new Date()), (0, _moment2.default)(new Date(req.body.date)), req.body.description, req.body.category, req.accountId];
               _context.prev = 2;
               _context.next = 5;
-              return _db2.default.query(text, values);
+              return _dbService2.default.query(text, values);
 
             case 5:
               _ref2 = _context.sent;
@@ -75,10 +69,10 @@ var Expense = {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              findAllQuery = 'SELECT * FROM expenses';
+              findAllQuery = 'SELECT * FROM expenses WHERE account_id = $1';
               _context2.prev = 1;
               _context2.next = 4;
-              return _db2.default.query(findAllQuery);
+              return _dbService2.default.query(findAllQuery, [req.accountId]);
 
             case 4:
               _ref4 = _context2.sent;
@@ -113,10 +107,10 @@ var Expense = {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              text = 'SELECT e.*, c.name \n      FROM expenses e \n      LEFT JOIN categories c ON e.category = c.id\n      WHERE e.id = $1';
+              text = 'SELECT e.*, c.name \n      FROM expenses e \n      LEFT JOIN categories c ON e.category = c.id\n      WHERE e.id = $1 AND e.account_id = $2';
               _context3.prev = 1;
               _context3.next = 4;
-              return _db2.default.query(text, [req.params.id]);
+              return _dbService2.default.query(text, [req.params.id, req.accountId]);
 
             case 4:
               _ref6 = _context3.sent;
@@ -130,20 +124,19 @@ var Expense = {
               return _context3.abrupt('return', res.status(404).send({ 'message': 'expense not found' }));
 
             case 8:
-              console.log('got 1');
               return _context3.abrupt('return', res.status(200).send(rows[0]));
 
-            case 12:
-              _context3.prev = 12;
+            case 11:
+              _context3.prev = 11;
               _context3.t0 = _context3['catch'](1);
               return _context3.abrupt('return', res.status(400).send(_context3.t0));
 
-            case 15:
+            case 14:
             case 'end':
               return _context3.stop();
           }
         }
-      }, _callee3, this, [[1, 12]]);
+      }, _callee3, this, [[1, 11]]);
     }));
 
     function getOne(_x5, _x6) {
@@ -160,11 +153,11 @@ var Expense = {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              findOneQuery = 'SELECT * FROM expenses WHERE id=$1';
+              findOneQuery = 'SELECT * FROM expenses WHERE id = $1 AND account_id = $2';
               updateOneQuery = 'WITH updated AS (UPDATE\n        expenses SET amount=$1,modified_date=$2, date=$3, description=$4, category=$5\n        WHERE id=$6\n        RETURNING *)\n      SELECT updated.*, c.name\n      FROM updated\n      INNER JOIN categories c ON updated.category = c.id';
               _context4.prev = 2;
               _context4.next = 5;
-              return _db2.default.query(findOneQuery, [req.params.id]);
+              return _dbService2.default.query(findOneQuery, [req.params.id, req.accountId]);
 
             case 5:
               _ref8 = _context4.sent;
@@ -180,7 +173,7 @@ var Expense = {
             case 9:
               values = [req.body.amount || rows[0].amount, (0, _moment2.default)(new Date()), (0, _moment2.default)(new Date(req.body.date)), req.body.description, req.body.category, req.params.id];
               _context4.next = 12;
-              return _db2.default.query(updateOneQuery, values);
+              return _dbService2.default.query(updateOneQuery, values);
 
             case 12:
               response = _context4.sent;
@@ -213,10 +206,10 @@ var Expense = {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              deleteQuery = 'DELETE FROM expenses WHERE id=$1 returning *';
+              deleteQuery = 'DELETE FROM expenses WHERE id = $1 AND account_id = $2 RETURNING *';
               _context5.prev = 1;
               _context5.next = 4;
-              return _db2.default.query(deleteQuery, [req.params.id]);
+              return _dbService2.default.query(deleteQuery, [req.params.id, req.accountId]);
 
             case 4:
               _ref10 = _context5.sent;
@@ -259,10 +252,10 @@ var Expense = {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              getQuery = '\n      SELECT e.*, c.name FROM expenses e \n      LEFT JOIN categories c ON e.category = c.id \n      ORDER BY e.date DESC, e.created_date DESC LIMIT 10';
+              getQuery = '\n      SELECT e.*, c.name FROM expenses e \n      LEFT JOIN categories c ON e.category = c.id \n      WHERE e.account_id = $1\n      ORDER BY e.date DESC, e.created_date DESC LIMIT 10';
               _context6.prev = 1;
               _context6.next = 4;
-              return _db2.default.query(getQuery);
+              return _dbService2.default.query(getQuery, [req.accountId]);
 
             case 4:
               _ref12 = _context6.sent;
