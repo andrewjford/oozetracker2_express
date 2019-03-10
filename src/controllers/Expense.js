@@ -3,16 +3,10 @@ import uuidv4 from 'uuid/v4';
 import db from '../services/dbService';
 
 const Expense = {
-  /**
-   * Create A Expense
-   * @param {object} req 
-   * @param {object} res
-   * @returns {object} expense object 
-   */
   async create(req, res) {
     const text = `WITH inserted AS (INSERT INTO
-        expenses(id, amount, created_date, modified_date, date, description, category)
-        VALUES($1, $2, $3, $4, $5, $6, $7)
+        expenses(id, amount, created_date, modified_date, date, description, category, account_id)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *)
       SELECT inserted.*, c.name AS name
       FROM inserted
@@ -24,7 +18,8 @@ const Expense = {
       moment(new Date()),
       moment(new Date(req.body.date)),
       req.body.description,
-      req.body.category
+      req.body.category,
+      req.accountId,
     ];
 
     try {
@@ -37,9 +32,9 @@ const Expense = {
   },
 
   async getAll(req, res) {
-    const findAllQuery = 'SELECT * FROM expenses';
+    const findAllQuery = 'SELECT * FROM expenses WHERE account_id = $1';
     try {
-      const { rows, rowCount } = await db.query(findAllQuery);
+      const { rows, rowCount } = await db.query(findAllQuery, [req.accountId]);
       return res.status(200).send({ rows, rowCount });
     } catch(error) {
       return res.status(400).send(error);
@@ -50,13 +45,12 @@ const Expense = {
     const text = `SELECT e.*, c.name 
       FROM expenses e 
       LEFT JOIN categories c ON e.category = c.id
-      WHERE e.id = $1`;
+      WHERE e.id = $1 AND e.account_id = $2`;
     try {
-      const { rows } = await db.query(text, [req.params.id]);
+      const { rows } = await db.query(text, [req.params.id, req.accountId]);
       if (!rows[0]) {
         return res.status(404).send({'message': 'expense not found'});
       }
-      console.log('got 1');
       return res.status(200).send(rows[0]);
     } catch(error) {
       return res.status(400).send(error)
@@ -64,7 +58,7 @@ const Expense = {
   },
 
   async update(req, res) {
-    const findOneQuery = 'SELECT * FROM expenses WHERE id=$1';
+    const findOneQuery = 'SELECT * FROM expenses WHERE id = $1 AND account_id = $2';
     const updateOneQuery = `WITH updated AS (UPDATE
         expenses SET amount=$1,modified_date=$2, date=$3, description=$4, category=$5
         WHERE id=$6
@@ -74,7 +68,7 @@ const Expense = {
       INNER JOIN categories c ON updated.category = c.id`;
 
     try {
-      const { rows } = await db.query(findOneQuery, [req.params.id]);
+      const { rows } = await db.query(findOneQuery, [req.params.id, req.accountId]);
       if(!rows[0]) {
         return res.status(404).send({'message': 'expense not found'});
       }
@@ -94,9 +88,9 @@ const Expense = {
   },
 
   async delete(req, res) {
-    const deleteQuery = 'DELETE FROM expenses WHERE id=$1 returning *';
+    const deleteQuery = 'DELETE FROM expenses WHERE id = $1 AND account_id = $2 RETURNING *';
     try {
-      const { rows } = await db.query(deleteQuery, [req.params.id]);
+      const { rows } = await db.query(deleteQuery, [req.params.id, req.accountId]);
       if(!rows[0]) {
         return res.status(404).send({'message': 'expense not found'});
       }
@@ -110,9 +104,10 @@ const Expense = {
     const getQuery = `
       SELECT e.*, c.name FROM expenses e 
       LEFT JOIN categories c ON e.category = c.id 
+      WHERE e.account_id = $1
       ORDER BY e.date DESC, e.created_date DESC LIMIT 10`;
     try {
-      const { rows, rowCount } = await db.query(getQuery);
+      const { rows, rowCount } = await db.query(getQuery, [req.accountId]);
       return res.status(200).send({ rows, rowCount });
     } catch(error) {
       return res.status(400).send(error);

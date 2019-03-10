@@ -12,11 +12,14 @@ const Report = {
       FROM expenses e 
       LEFT JOIN categories c ON e.category = c.id
       WHERE e.date >= $1 AND
-        e.date < $2
+        e.date < $2 AND
+        e.account_id = $3
       GROUP BY c.id`;
+
     const values = [
       `${requestedMonth.getFullYear()}-${requestedMonth.getMonth()+1}-01`,
       `${nextMonth.getFullYear()}-${nextMonth.getMonth()+1}-01`,
+      req.accountId,
     ];
 
     try {
