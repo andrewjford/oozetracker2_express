@@ -1,0 +1,196 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.3
+-- Dumped by pg_dump version 9.6.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: categories; Type: TABLE; Schema: public; Owner: silvermac
+--
+
+CREATE TABLE categories (
+    id integer NOT NULL,
+    name character varying(64),
+    modified_date timestamp without time zone
+);
+
+
+ALTER TABLE categories OWNER TO silvermac;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: silvermac
+--
+
+CREATE SEQUENCE categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE categories_id_seq OWNER TO silvermac;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: silvermac
+--
+
+ALTER SEQUENCE categories_id_seq OWNED BY categories.id;
+
+
+--
+-- Name: expenses; Type: TABLE; Schema: public; Owner: silvermac
+--
+
+CREATE TABLE expenses (
+    id uuid NOT NULL,
+    amount numeric(12,2) NOT NULL,
+    created_date timestamp without time zone,
+    modified_date timestamp without time zone,
+    description text,
+    category integer,
+    date timestamp without time zone
+);
+
+
+ALTER TABLE expenses OWNER TO silvermac;
+
+--
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: silvermac
+--
+
+ALTER TABLE ONLY categories ALTER COLUMN id SET DEFAULT nextval('categories_id_seq'::regclass);
+
+
+--
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: silvermac
+--
+
+COPY categories (id, name, modified_date) FROM stdin;
+1	Entertainment	\N
+4	Travel	\N
+5	Medical	\N
+7	Apparel	\N
+8	Gifts	\N
+2	Groceries	2019-03-02 19:00:54.44
+3	Dining Out	2019-03-02 19:06:08.167
+\.
+
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: silvermac
+--
+
+SELECT pg_catalog.setval('categories_id_seq', 25, true);
+
+
+--
+-- Data for Name: expenses; Type: TABLE DATA; Schema: public; Owner: silvermac
+--
+
+COPY expenses (id, amount, created_date, modified_date, description, category, date) FROM stdin;
+f27ec1b7-d662-4eef-abdd-a621b3561cab	6.34	2019-02-10 18:05:52.173	2019-02-10 19:03:28.713	cherry	3	2019-02-09 00:00:00
+e39de042-9570-4d42-aafc-6721a5a0613c	19.44	2019-02-10 19:02:51.987	2019-02-10 19:54:35.722	Gordon Ramsey burgers	3	2019-02-10 00:00:00
+6edce4bf-d8ea-4bcb-99c6-4c56ca23b5cb	9.90	2019-02-21 04:14:00.409	2019-02-21 04:14:00.41	Whole Foods	2	2019-02-20 00:00:00
+e9fb4c07-db71-416f-8e13-b182d014fbe0	6.79	2019-02-23 19:39:10.589	2019-02-23 19:39:10.59	Cherry	3	2019-02-23 00:00:00
+eacc5b68-21a3-4fc5-aa2a-fc5e55658f66	38.99	2019-02-23 21:56:38.176	2019-02-23 21:56:38.179	amazon	7	2019-02-23 00:00:00
+f5dc1292-a7e6-4180-b45a-3feb5ac24d82	35.99	2019-02-23 21:50:18.152	2019-02-24 01:29:24.813	great meats	2	2019-02-23 00:00:00
+9ad521c5-bbf3-4256-82cb-10a02c3c97bc	65.33	2019-02-23 19:53:05.845	2019-02-24 01:43:02.134	donkey kong country	1	2019-02-21 00:00:00
+78faed81-e278-482b-9415-2a61ae8a2ae1	6.55	2019-02-24 01:45:32.195	2019-02-24 01:45:42.997	Stumptown	3	2019-02-23 00:00:00
+8a97cb79-bf80-454b-84db-0237422a7719	49.99	2019-02-23 22:19:04.799	2019-02-24 02:55:52.455	groupon	1	2019-02-23 00:00:00
+eaab0d45-b08c-4397-a713-8a03aed65b5d	15.02	2019-02-23 23:36:45.4	2019-02-24 20:40:22.546	tacos	3	2018-12-27 00:00:00
+f5ed416c-bd19-4f2d-854a-32b83831fa41	5.79	2019-02-24 20:44:07.577	2019-02-24 20:44:07.577	Cherry	3	2019-02-24 00:00:00
+8a189fcb-35e5-4a52-8fc0-4131abf24c8b	6.56	2019-03-02 18:56:53.989	2019-03-02 18:56:53.991	Cherry	3	2019-03-02 00:00:00
+8e92b6e1-4eaa-424b-84d0-9d45da0fe724	7.98	2019-03-02 19:27:17.134	2019-03-02 19:27:17.134	Chipotle	3	2019-03-01 00:00:00
+3feb0bd0-6139-4689-a8c1-2f9a96f457a6	5.39	2019-03-02 19:28:00.282	2019-03-02 19:28:00.282	Whole Foods	2	2019-03-01 00:00:00
+7480fd6d-efbf-4a89-82ec-3063cc40b04b	14.90	2019-03-02 19:28:39.129	2019-03-02 19:28:39.129	testtest	1	2019-02-28 00:00:00
+9c700425-fcdf-4ceb-bef0-7a66a08445d2	80.45	2019-03-02 20:55:41.768	2019-03-02 20:55:41.768	donkey teeth	1	2019-03-02 00:00:00
+cd86db8d-0561-4fce-8e28-2b99b7479fac	11.99	2019-03-02 20:56:01.44	2019-03-02 20:56:01.44	bacon egg and cheese	3	2019-02-27 00:00:00
+380380ea-87c4-4842-8f30-940774b079ab	40.10	2019-03-02 21:01:35.463	2019-03-02 21:01:35.463	cactus	8	2019-02-27 00:00:00
+16a32959-de53-4ad2-83ed-ebb6dc1cf9f1	20.99	2019-03-05 05:28:16.459	2019-03-05 05:28:16.461	google app store	1	2019-03-03 00:00:00
+3590858e-f6c7-4984-849a-b0b43506615f	118.37	2019-01-05 21:39:10.53	2019-01-05 21:39:10.531	amazon	1	2019-01-05 21:39:10.53
+cab29ef8-e5a3-488c-9936-e0fb59cbcb23	118.37	2019-01-12 18:11:07.121	2019-01-12 18:11:07.124	amazon	1	2019-01-12 18:11:07.121
+19d06a4b-872a-47a6-91af-2c83409ca8fd	123.00	2019-01-19 22:24:24.546	2019-01-19 22:24:24.553	talko	2	2019-01-19 22:24:24.546
+69302984-271b-4628-9889-d136e21d3859	123.00	2019-01-19 22:26:52.234	2019-01-19 22:26:52.235	QFC	2	2019-01-19 22:26:52.234
+86bbb349-6748-488e-9859-76abc22742ce	33.45	2019-01-19 22:27:51.832	2019-01-19 22:27:51.832	meat	2	2019-01-19 22:27:51.832
+c1208ddf-9cbf-4020-956b-22b81f6e65c8	20.92	2019-01-19 22:29:42.078	2019-01-19 22:29:42.078	Whole Foods	2	2019-01-19 22:29:42.078
+e5e692db-08dd-4103-be66-e40c0f87fc1b	12.99	2019-01-19 22:31:38.005	2019-01-19 22:31:38.005	amazon	1	2019-01-19 22:31:38.005
+4eceb373-f188-43b5-95d5-e99fe24e5127	12.40	2019-01-20 19:52:41.344	2019-01-20 19:52:41.344	Frankie and Joe's	3	2019-01-20 19:52:41.344
+8803007e-a0e7-47d6-9162-b3f691e10129	35.44	2019-01-26 18:23:29.598	2019-01-26 18:23:29.598	bradys	3	2019-01-26 18:23:29.598
+925c2008-a4ef-4ab5-905a-78a2a6fc72bd	123.45	2019-02-04 03:31:41.602	2019-02-04 03:31:41.603	consul	1	2019-02-04 03:31:41.602
+d60fc709-4aec-40d5-a3a1-d365ddeaddc7	39.80	2019-02-09 19:02:09.854	2019-02-09 19:02:09.855	crabs	3	2019-02-09 19:02:09.854
+\.
+
+
+--
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: silvermac
+--
+
+ALTER TABLE ONLY categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: expenses expenses_pkey; Type: CONSTRAINT; Schema: public; Owner: silvermac
+--
+
+ALTER TABLE ONLY expenses
+    ADD CONSTRAINT expenses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: expenses expenses_category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: silvermac
+--
+
+ALTER TABLE ONLY expenses
+    ADD CONSTRAINT expenses_category_fkey FOREIGN KEY (category) REFERENCES categories(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
