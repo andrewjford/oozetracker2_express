@@ -1,5 +1,5 @@
 import moment from 'moment';
-import db from '../db';
+import db from '../services/dbService';
 
 const Category = {
 
