@@ -4,9 +4,9 @@ import db from '../services/dbService';
 const Category = {
 
   async create(req, res) {
-    console.log(req);
+    console.log(req.accountId);
     const text = `INSERT INTO
-      categories(name, accountId)
+      categories(name, account_id)
       VALUES($1, $2)
       RETURNING *`;
     const values = [
