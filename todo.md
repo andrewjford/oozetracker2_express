@@ -1,1 +1,3 @@
 - sanitize input
+- jest tests
+- wrap index router with a function that auto calls auth

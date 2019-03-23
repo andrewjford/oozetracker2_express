@@ -4,6 +4,12 @@ import db from '../services/dbService';
 
 const Expense = {
   async create(req, res) {
+    const queryString = `SELECT id FROM categories WHERE id=$1 AND account_id=$2`;
+    const { rows } = await db.query(queryString, [req.body.category, req.accountId]);
+    if (rows.length === 0) {
+      return res.status(400).send('Invalid category');
+    }
+
     const text = `WITH inserted AS (INSERT INTO
         expenses(id, amount, created_date, modified_date, date, description, category, account_id)
         VALUES($1, $2, $3, $4, $5, $6, $7, $8)
@@ -11,6 +17,7 @@ const Expense = {
       SELECT inserted.*, c.name AS name
       FROM inserted
       INNER JOIN categories c ON inserted.category = c.id`;
+
     const values = [
       uuidv4(),
       req.body.amount,
