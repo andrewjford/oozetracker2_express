@@ -1,6 +1,6 @@
 import express from 'express';
 import Expense from '../controllers/Expense';
-import Category from '../controllers/Category';
+import CategoryController from '../controllers/CategoryController';
 import Report from '../controllers/Report';
 import User from '../controllers/User';
 import authMiddleware from '../services/authMiddleware';
@@ -20,10 +20,10 @@ router.get('/api/v1/expenses/:id', authMiddleware.validateToken, Expense.getOne)
 router.put('/api/v1/expenses/:id', authMiddleware.validateToken, Expense.update);
 router.delete('/api/v1/expenses/:id', authMiddleware.validateToken, Expense.delete);
 
-router.get('/api/v1/categories', authMiddleware.validateToken, Category.getAll);
-router.post('/api/v1/categories', authMiddleware.validateToken, Category.create);
-router.put('/api/v1/categories/:id', authMiddleware.validateToken, Category.update);
-router.delete('/api/v1/categories/:id', authMiddleware.validateToken, Category.delete);
+router.get('/api/v1/categories', authMiddleware.validateToken, CategoryController.getAll);
+router.post('/api/v1/categories', authMiddleware.validateToken, CategoryController.create);
+router.put('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.update);
+router.delete('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.delete);
 
 router.get('/api/v1/reports/recent', authMiddleware.validateToken, Expense.getRecentExpenses);
 router.post('/api/v1/reports/monthly', authMiddleware.validateToken, Report.getMonthly);

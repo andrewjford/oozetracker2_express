@@ -1,20 +1,12 @@
 import moment from 'moment';
 import db from '../services/dbService';
+import CategoryModel from '../models/CategoryModel';
 
-const Category = {
+const CategoryController = {
 
   async create(req, res) {
-    console.log(req.accountId);
-    const text = `INSERT INTO
-      categories(name, account_id)
-      VALUES($1, $2)
-      RETURNING *`;
-    const values = [
-      req.body.name,
-      req.accountId
-    ];
     try {
-      const { rows } = await db.query(text, values);
+      const { rows } = await CategoryModel.create(req);
       return res.status(201).send(rows[0]);
     } catch(error) {
       return res.status(400).send(error);
@@ -22,9 +14,8 @@ const Category = {
   },
 
   async getAll(req, res) {
-    const findAllQuery = 'SELECT * FROM categories WHERE account_id = $1';
     try {
-      const { rows, rowCount } = await db.query(findAllQuery, [req.accountId]);
+      const { rows, rowCount } = await CategoryModel.getAll(req);
       return res.status(200).send({ rows, rowCount });
     } catch(error) {
       return res.status(400).send(error);
@@ -80,4 +71,4 @@ const Category = {
   }
 }
 
-export default Category;
+export default CategoryController;

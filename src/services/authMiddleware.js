@@ -20,9 +20,9 @@ const authMiddleware = {
         }
       });
     } else {
-      return res.json({
+      return res.status(401).send({
         success: false,
-        message: 'Auth token not provided'
+        message: 'No valid token provided'
       });
     }
   }
