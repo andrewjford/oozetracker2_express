@@ -1,5 +1,5 @@
 import express from 'express';
-import Expense from '../controllers/Expense';
+import ExpenseController from '../controllers/ExpenseController';
 import CategoryController from '../controllers/CategoryController';
 import Report from '../controllers/Report';
 import User from '../controllers/User';
@@ -14,18 +14,18 @@ router.get('/', (req, res) => {
 router.post('/api/v1/register', User.create);
 router.post('/api/v1/login', User.login);
 
-router.post('/api/v1/expenses', authMiddleware.validateToken, Expense.create);
-router.get('/api/v1/expenses', authMiddleware.validateToken, Expense.getAll);
-router.get('/api/v1/expenses/:id', authMiddleware.validateToken, Expense.getOne);
-router.put('/api/v1/expenses/:id', authMiddleware.validateToken, Expense.update);
-router.delete('/api/v1/expenses/:id', authMiddleware.validateToken, Expense.delete);
+router.post('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.create);
+router.get('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.getAll);
+router.get('/api/v1/expenses/:id', authMiddleware.validateToken, ExpenseController.getOne);
+router.put('/api/v1/expenses/:id', authMiddleware.validateToken, ExpenseController.update);
+router.delete('/api/v1/expenses/:id', authMiddleware.validateToken, ExpenseController.delete);
 
 router.get('/api/v1/categories', authMiddleware.validateToken, CategoryController.getAll);
 router.post('/api/v1/categories', authMiddleware.validateToken, CategoryController.create);
 router.put('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.update);
 router.delete('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.delete);
 
-router.get('/api/v1/reports/recent', authMiddleware.validateToken, Expense.getRecentExpenses);
+router.get('/api/v1/reports/recent', authMiddleware.validateToken, ExpenseController.getRecentExpenses);
 router.post('/api/v1/reports/monthly', authMiddleware.validateToken, Report.getMonthly);
 
 export default router;

@@ -2,7 +2,7 @@ import moment from 'moment';
 import uuidv4 from 'uuid/v4';
 import db from '../services/dbService';
 
-const Expense = {
+const ExpenseController = {
   async create(req, res) {
     const queryString = `SELECT id FROM categories WHERE id=$1 AND account_id=$2`;
     const { rows } = await db.query(queryString, [req.body.category, req.accountId]);
