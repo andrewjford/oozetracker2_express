@@ -122,4 +122,4 @@ const ExpenseController = {
   },
 }
 
-export default Expense;
+export default ExpenseController;

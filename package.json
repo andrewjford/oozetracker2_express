@@ -7,7 +7,7 @@
     "build": "babel src --out-dir dist",
     "start": "nodemon --exec babel-node src/server.js",
     "serve": "node dist/server.js",
-    "test": "jest"
+    "test": "jest --forceExit --detectOpenHandles"
   },
   "author": "Andrew Ford",
   "license": "ISC",
