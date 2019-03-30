@@ -1,7 +1,4 @@
 import AccountModel from '../models/AccountModel';
-import db from '../services/dbService';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 const AccountController = {
   async create(req, res) {
@@ -19,28 +16,18 @@ const AccountController = {
   },
 
   async login(req, res) {
-    const sqlString = `SELECT id, password 
-      FROM accounts 
-      WHERE email = $1`;
     try {
-      const { rows } = await db.query(sqlString, [req.body.email]);
-      const user = rows[0];
-      if (!user) {
-        return res.status(404).send({'message': 'Account not found for provided email'});
+      const result = await AccountModel.login(req);
+      switch (result.status) {
+        case "Success":
+          return res.status(200).send(result);
+        case "Not Found":
+          return res.status(404).send(result);
+        case "Unauthorized":
+          return res.status(401).send(result);
+        default:
+          return res.status(400).send("unable to login");
       }
-      
-      const passwordIsCorrect = bcrypt.compareSync(req.body.password, user.password);
-      if (!passwordIsCorrect) {
-        return res.status(401).send('Password not valid!');
-      }
-
-      const tokenExpiration = 24*60*60;
-      const token = jwt.sign({id: user.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
-      return res.status(200).send({
-        user: {id: user.id},
-        token,
-        tokenExpiration
-      });
     } catch(error) {
       return res.status(400).send(error)
     }
