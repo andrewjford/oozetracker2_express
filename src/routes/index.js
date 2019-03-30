@@ -2,7 +2,7 @@ import express from 'express';
 import ExpenseController from '../controllers/ExpenseController';
 import CategoryController from '../controllers/CategoryController';
 import Report from '../controllers/Report';
-import User from '../controllers/User';
+import AccountController from '../controllers/AccountController';
 import authMiddleware from '../services/authMiddleware';
 
 const router = express.Router();
@@ -11,9 +11,9 @@ router.get('/', (req, res) => {
   return res.status(200).send({'message': 'YAY!'});
 });
 
-router.post('/api/v1/register', User.create);
-router.post('/api/v1/login', User.login);
-router.delete('/api/v1/users/:id', authMiddleware.validateToken, User.delete);
+router.post('/api/v1/register', AccountController.create);
+router.post('/api/v1/login', AccountController.login);
+router.delete('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.delete);
 
 router.post('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.create);
 router.get('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.getAll);

@@ -3,7 +3,7 @@ import db from '../services/dbService';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const User = {
+const AccountController = {
   async create(req, res) {
     if (!req.body.name, !req.body.email, !req.body.password) {
       return res.status(400).send({message: 'Missing required params'});
@@ -59,4 +59,4 @@ const User = {
   }
 }
 
-export default User;
+export default AccountController;

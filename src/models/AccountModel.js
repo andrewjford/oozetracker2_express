@@ -35,6 +35,10 @@ const AccountModel = {
   async delete(req) {
     const deleteQuery = 'DELETE FROM accounts WHERE id = $1';
     return db.query(deleteQuery, [req.accountId]);
+  },
+
+  async login(req) {
+
   }
 }
 

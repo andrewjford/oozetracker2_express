@@ -33,7 +33,7 @@ describe("POST /api/v1/register", () => {
 
   it("should delete a user", async () => {
     const result = await request(app)
-      .delete(`/api/v1/users/${accountId}`)
+      .delete(`/api/v1/accounts/${accountId}`)
       .set("Authorization",`Bearer ${token}`);
     expect(result.statusCode).toEqual(204);
   });
