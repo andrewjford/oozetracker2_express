@@ -1,5 +1,3 @@
-import moment from 'moment';
-import db from '../services/dbService';
 import CategoryModel from '../models/CategoryModel';
 
 const CategoryController = {
