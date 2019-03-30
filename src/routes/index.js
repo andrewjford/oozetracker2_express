@@ -22,6 +22,7 @@ router.delete('/api/v1/expenses/:id', authMiddleware.validateToken, ExpenseContr
 
 router.get('/api/v1/categories', authMiddleware.validateToken, CategoryController.getAll);
 router.post('/api/v1/categories', authMiddleware.validateToken, CategoryController.create);
+router.get('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.getOne);
 router.put('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.update);
 router.delete('/api/v1/categories/:id', authMiddleware.validateToken, CategoryController.delete);
 

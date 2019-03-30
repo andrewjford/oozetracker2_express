@@ -13,16 +13,8 @@ beforeAll(async (done) => {
   done();
 });
 
-describe("GET / - default endpoint test", () => {
-  it("Hello world API Request", async () => {
-    const result = await request(app).get("/");
-
-    expect(result.statusCode).toEqual(200);
-  });
-});
-
 describe("GET /api/v1/categories", () => {
-  it("categories", async () => {
+  it("should return 401 when no auth token is passed", async () => {
     const result = await request(app).get("/api/v1/categories");
 
     expect(result.statusCode).toEqual(401);
@@ -30,11 +22,55 @@ describe("GET /api/v1/categories", () => {
 });
 
 describe("GET /api/v1/categories", () => {
-  it("returns test user categories", async () => {
+  it("should return test user categories", async () => {
     const result = await request(app)
       .get("/api/v1/categories")
       .set("Authorization",`Bearer ${token}`);
     expect(result.statusCode).toEqual(200);
     expect(result.body.rows.length > 0);
+  });
+});
+
+describe("insert, update and delete categories", () => {
+  let categoryId;
+  const CATEGORY_NAME = "test tacos";
+  const UPDATED_NAME = "updated tacos";
+
+  it("creates category", async () => {
+    const result = await request(app)
+      .post("/api/v1/categories")
+      .set("Authorization",`Bearer ${token}`)
+      .send({
+        name: CATEGORY_NAME,
+      });
+    expect(result.statusCode).toEqual(201);
+    expect(result.body.name).toEqual(CATEGORY_NAME);
+    categoryId = result.body.id;
+  });
+
+  it("updates category", async () => {
+    const result = await request(app)
+      .put(`/api/v1/categories/${categoryId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: UPDATED_NAME,
+      });
+      expect(result.statusCode).toEqual(200);
+      expect(result.body.name).toEqual(UPDATED_NAME);
+  });
+
+  it("gets a category", async () => {
+    const result = await request(app)
+      .get(`/api/v1/categories/${categoryId}`)
+      .set("Authorization",`Bearer ${token}`);
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.name).toEqual(UPDATED_NAME);
+  });
+
+  it("deletes category", async () => {
+    const result = await request(app)
+      .delete(`/api/v1/categories/${categoryId}`)
+      .set("Authorization",`Bearer ${token}`);
+    expect(result.statusCode).toEqual(204);
   });
 });
