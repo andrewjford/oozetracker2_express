@@ -1,3 +1,4 @@
+import AccountModel from '../models/AccountModel';
 import db from '../services/dbService';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -8,27 +9,12 @@ const User = {
       return res.status(400).send({message: 'Missing required params'});
     }
 
-    const sqlString = `
-      INSERT INTO
-        accounts(name, email, password)
-      VALUES($1, $2, $3)
-      RETURNING id, name, email`;
-    
-    const values = [
-      req.body.name,
-      req.body.email,
-      bcrypt.hashSync(req.body.password, 10),
-    ];
-
     try {
-      const { rows } = await db.query(sqlString, values);
-      const tokenExpiration = 24*60*60;
-      const token = jwt.sign({id: rows[0].id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
-      return res.status(201).send({
-        user: rows[0], token, tokenExpiration});
+      const modelResponse = await AccountModel.create(req);
+      return res.status(201).send(modelResponse);
     } catch(error) {
       console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send("error creating user");
     }
   },
 
@@ -50,13 +36,25 @@ const User = {
 
       const tokenExpiration = 24*60*60;
       const token = jwt.sign({id: user.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
-      return res.status(201).send({
+      return res.status(200).send({
         user: {id: user.id},
         token,
         tokenExpiration
       });
     } catch(error) {
       return res.status(400).send(error)
+    }
+  },
+
+  async delete(req, res) {
+    try {
+      const result = await AccountModel.delete(req);
+      if(result.rowCount === 0) {
+        return res.status(404).send({'message': 'category not found'});
+      }
+      return res.status(204).send({ 'message': 'deleted' });
+    } catch(error) {
+      return res.status(400).send(error);
     }
   }
 }

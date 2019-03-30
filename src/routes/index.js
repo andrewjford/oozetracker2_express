@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
 
 router.post('/api/v1/register', User.create);
 router.post('/api/v1/login', User.login);
+router.delete('/api/v1/users/:id', authMiddleware.validateToken, User.delete);
 
 router.post('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.create);
 router.get('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.getAll);
