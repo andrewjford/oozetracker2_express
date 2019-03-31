@@ -28,23 +28,34 @@ const ExpenseModel = {
   },
 
   getAll(req) {
-    const findAllQuery = 'SELECT * FROM categories WHERE account_id = $1';
+    const findAllQuery = 'SELECT * FROM expenses WHERE account_id = $1';
     return db.query(findAllQuery, [req.accountId]);
   },
 
   getOne(req) {
-    const text = 'SELECT * FROM categories WHERE id = $1 AND account_id = $2';
-    return db.query(text, [req.params.id, req.accountId]);
+    const query = `SELECT e.*, c.name 
+      FROM expenses e 
+      LEFT JOIN categories c ON e.category = c.id
+      WHERE e.id = $1 AND e.account_id = $2`;
+    return db.query(query, [req.params.id, req.accountId]);
   },
 
   update(req, existingRecord) {
-    const updateOneQuery =`UPDATE categories
-      SET name = $1, modified_date = $2
-      WHERE id = $3 RETURNING *`;
+    const updateOneQuery = `
+      WITH updated AS (UPDATE
+        expenses SET amount=$1,modified_date=$2, date=$3, description=$4, category=$5
+        WHERE id=$6
+        RETURNING *)
+      SELECT updated.*, c.name
+      FROM updated
+      INNER JOIN categories c ON updated.category = c.id`;
 
     const values = [
-      req.body.name || existingRecord.name,
+      req.body.amount || existingRecord.amount,
       moment(new Date()),
+      req.body.date ? moment(new Date(req.body.date)) : existingRecord.date,
+      req.body.description ? req.body.description : existingRecord.description,
+      req.body.category ? req.body.category : existingRecord.category,
       req.params.id
     ];
 
@@ -52,10 +63,18 @@ const ExpenseModel = {
   },
 
   delete(req) {
-    const deleteQuery = 'DELETE FROM categories WHERE id = $1 AND account_id = $2 RETURNING *';
+    const deleteQuery = 'DELETE FROM expenses WHERE id = $1 AND account_id = $2 RETURNING *';
     return db.query(deleteQuery, [req.params.id, req.accountId]);
-  }
+  },
 
+  getRecentExpenses(req) {
+    const getQuery = `
+      SELECT e.*, c.name FROM expenses e 
+      LEFT JOIN categories c ON e.category = c.id 
+      WHERE e.account_id = $1
+      ORDER BY e.date DESC, e.created_date DESC LIMIT 10`;
+    return db.query(getQuery, [req.accountId]);
+  }
 }
 
 export default ExpenseModel;

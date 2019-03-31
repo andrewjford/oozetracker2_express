@@ -29,7 +29,7 @@ afterAll(async (done) => {
   done();
 });
 
-describe("GET /api/v1/expenses", () => {
+describe("test auth", () => {
   it("should return 401 when no auth token is passed", async () => {
     const result = await request(app).get("/api/v1/expenses");
 
@@ -37,7 +37,7 @@ describe("GET /api/v1/expenses", () => {
   });
 });
 
-describe("Reject if bad category", () => {
+describe("Expense Create validation", () => {
   it("should reject expense creation if an invalid category is passed", async () => {
     const requestBody = {
       amount: 200.01,
@@ -99,6 +99,14 @@ describe("insert, update and delete expenses", () => {
     expect(result.body.description).toEqual(UPDATED_DESCRIPTION);
   });
 
+  it("returns all expenses related to account", async () => {
+    const result = await request(app)
+      .get("/api/v1/expenses")
+      .set("Authorization", `Bearer ${token}`);
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.rowCount).toEqual(1);
+  });
+
   it("deletes expense", async () => {
     const result = await request(app)
       .delete(`/api/v1/expenses/${expenseId}`)
@@ -106,3 +114,4 @@ describe("insert, update and delete expenses", () => {
     expect(result.statusCode).toEqual(204);
   });
 });
+
