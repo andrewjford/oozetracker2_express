@@ -82,9 +82,9 @@ const ExpenseController = {
       const values = [
         req.body.amount || rows[0].amount,
         moment(new Date()),
-        moment(new Date(req.body.date)),
-        req.body.description,
-        req.body.category,
+        req.body.date ? moment(new Date(req.body.date)) : rows[0].date,
+        req.body.description ? req.body.description : rows[0].description,
+        req.body.category ? req.body.category : rows[0].category,
         req.params.id
       ];
       const response = await db.query(updateOneQuery, values);
