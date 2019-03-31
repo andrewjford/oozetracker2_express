@@ -37,6 +37,24 @@ describe("GET /api/v1/expenses", () => {
   });
 });
 
+describe("Reject if bad category", () => {
+  it("should reject expense creation if an invalid category is passed", async () => {
+    const requestBody = {
+      amount: 200.01,
+      created_date: moment(new Date()),
+      modified_date: moment(new Date()),
+      date: moment(new Date("2019-01-01")),
+      description: "test description",
+      category: 1,
+    }
+    const result = await request(app)
+      .post("/api/v1/expenses")
+      .set("Authorization",`Bearer ${token}`)
+      .send(requestBody);
+    expect(result.statusCode).toEqual(400);
+  })
+})
+
 describe("insert, update and delete expenses", () => {
   let expenseId;
   const UPDATED_DESCRIPTION = "something else";
@@ -55,6 +73,7 @@ describe("insert, update and delete expenses", () => {
       .set("Authorization",`Bearer ${token}`)
       .send(requestBody);
     expect(result.statusCode).toEqual(201);
+    console.log(JSON.stringify(result.body));
     expect(result.body.description).toEqual("test description");
     expenseId = result.body.id;
   });

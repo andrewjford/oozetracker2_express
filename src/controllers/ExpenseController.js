@@ -1,36 +1,20 @@
 import moment from 'moment';
-import uuidv4 from 'uuid/v4';
 import db from '../services/dbService';
+import ExpenseModel from '../models/ExpenseModel';
+import CategoryModel from '../models/CategoryModel';
 
 const ExpenseController = {
   async create(req, res) {
-    const queryString = `SELECT id FROM categories WHERE id=$1 AND account_id=$2`;
-    const { rows } = await db.query(queryString, [req.body.category, req.accountId]);
-    if (rows.length === 0) {
+    const category = await CategoryModel.getOne({
+      params:{id: req.body.category},
+      accountId: req.accountId
+    });
+    if (category.rows.length === 0) {
       return res.status(400).send('Invalid category');
     }
-
-    const text = `WITH inserted AS (INSERT INTO
-        expenses(id, amount, created_date, modified_date, date, description, category, account_id)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8)
-        RETURNING *)
-      SELECT inserted.*, c.name AS name
-      FROM inserted
-      INNER JOIN categories c ON inserted.category = c.id`;
-
-    const values = [
-      uuidv4(),
-      req.body.amount,
-      moment(new Date()),
-      moment(new Date()),
-      moment(new Date(req.body.date)),
-      req.body.description,
-      req.body.category,
-      req.accountId,
-    ];
-
+    
     try {
-      const { rows } = await db.query(text, values);
+      const rows = await ExpenseModel.create(req);
       return res.status(201).send(rows[0]);
     } catch(error) {
       console.log(error);

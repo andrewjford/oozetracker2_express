@@ -1,43 +1,61 @@
 import moment from 'moment';
-import uuid from 'uuid';
+import uuidv4 from 'uuid/v4';
+import db from '../services/dbService';
 
-class Expense {
-  constructor() {
-    this.expenses = [];
+const ExpenseModel = {
+  async create(req) {
+    const text = `WITH inserted AS (INSERT INTO
+      expenses(id, amount, created_date, modified_date, date, description, category, account_id)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *)
+    SELECT inserted.*, c.name AS name
+    FROM inserted
+    INNER JOIN categories c ON inserted.category = c.id`;
+
+    const values = [
+      uuidv4(),
+      req.body.amount,
+      moment(new Date()),
+      moment(new Date()),
+      moment(new Date(req.body.date)),
+      req.body.description,
+      req.body.category,
+      req.accountId,
+    ];
+
+    const { rows } = await db.query(text, values);
+    return rows;
+  },
+
+  getAll(req) {
+    const findAllQuery = 'SELECT * FROM categories WHERE account_id = $1';
+    return db.query(findAllQuery, [req.accountId]);
+  },
+
+  getOne(req) {
+    const text = 'SELECT * FROM categories WHERE id = $1 AND account_id = $2';
+    return db.query(text, [req.params.id, req.accountId]);
+  },
+
+  update(req, existingRecord) {
+    const updateOneQuery =`UPDATE categories
+      SET name = $1, modified_date = $2
+      WHERE id = $3 RETURNING *`;
+
+    const values = [
+      req.body.name || existingRecord.name,
+      moment(new Date()),
+      req.params.id
+    ];
+
+    return db.query(updateOneQuery, values);
+  },
+
+  delete(req) {
+    const deleteQuery = 'DELETE FROM categories WHERE id = $1 AND account_id = $2 RETURNING *';
+    return db.query(deleteQuery, [req.params.id, req.accountId]);
   }
 
-  create(data) {
-    const newExpense = {
-      id: uuid.v4(),
-      amount: data.amount || '',
-      createdDate: moment.now(),
-      modifiedDate: moment.now()
-    };
-    this.expenses.push(newExpense);
-    return newExpense;
-  }
-
-  findOne(id) {
-    return this.expenses.find(expense => expense.id === id);
-  }
-
-  findAll() {
-    return this.expenses;
-  }
-
-  update(id, data) {
-    const expense = this.findOne(id);
-    const index = this.expenses.indexOf(expense);
-    this.expenses[index].amount = data['amount'] || expense.amount;
-    this.expenses[index].modifiedDate = moment.now()
-    return this.expenses[index];
-  }
-
-  delete(id) {
-    const expense = this.findOne(id);
-    const index = this.expenses.indexOf(expense);
-    this.expenses.splice(index, 1);
-    return {};
-  }
 }
-export default new Expense();
+
+export default ExpenseModel;
