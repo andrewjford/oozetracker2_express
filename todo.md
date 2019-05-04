@@ -1,5 +1,2 @@
-- only run querys in context of accountId
-- jest tests
-- move logic to models
 - wrap index router with a function that auto calls auth
 - sanitize input
