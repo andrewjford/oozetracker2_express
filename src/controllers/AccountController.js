@@ -1,9 +1,11 @@
 import AccountModel from '../models/AccountModel';
+import AccountValidator from '../validators/AccountValidator';
 
 const AccountController = {
   async create(req, res) {
-    if (!req.body.name, !req.body.email, !req.body.password) {
-      return res.status(400).send({message: 'Missing required params'});
+    const errors = AccountValidator.onCreate(req);
+    if (errors.length > 0) {
+      return res.status(422).send({ message: errors });
     }
 
     try {
