@@ -12,7 +12,9 @@ const AccountController = {
       const modelResponse = await AccountModel.create(req);
       return res.status(201).send(modelResponse);
     } catch(error) {
-      console.log(error);
+      if (error.code === '23505') {
+        return res.status(422).send({message: ["A user already exists for this email."]});
+      }
       return res.status(400).send("error creating user");
     }
   },

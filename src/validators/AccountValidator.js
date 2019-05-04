@@ -1,6 +1,8 @@
 import * as EmailValidator from 'email-validator';
 
-const passwordRegex = new RegExp('/[0-9a-zA-Z!@#\$%\^&]{8,}/');
+// requires 8+ password length
+// can use any alphanumeric and the standard symbols
+const passwordRegex = new RegExp('^[A-Za-z\d!@#$%^&*()_+\-=].{7,}$');
 
 const AccountValidator = {
   onCreate(req) {
