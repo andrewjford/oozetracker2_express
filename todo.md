@@ -1,2 +1,3 @@
 - wrap index router with a function that auto calls auth
+- dos prevention module
 - sanitize input
