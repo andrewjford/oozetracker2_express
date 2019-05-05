@@ -4,6 +4,7 @@ import CategoryController from '../controllers/CategoryController';
 import Report from '../controllers/Report';
 import AccountController from '../controllers/AccountController';
 import authMiddleware from '../services/authMiddleware';
+import { apiRegisterLimiter, apiLoginLimiter } from '../services/rateLimitMiddleware';
 
 const router = express.Router();
 
@@ -11,8 +12,8 @@ router.get('/', (req, res) => {
   return res.status(200).send({'message': 'YAY!'});
 });
 
-router.post('/api/v1/register', AccountController.create);
-router.post('/api/v1/login', AccountController.login);
+router.post('/api/v1/register', apiRegisterLimiter, AccountController.create);
+router.post('/api/v1/login', apiLoginLimiter, AccountController.login);
 router.delete('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.delete);
 
 router.post('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.create);
