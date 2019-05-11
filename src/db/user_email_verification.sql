@@ -8,3 +8,8 @@ CREATE TABLE IF NOT EXISTS verification_tokens (
   );
 
 ALTER TABLE accounts ALTER COLUMN is_verified SET DEFAULT FALSE;
+
+
+UPDATE accounts
+SET is_verified = DEFAULT
+WHERE is_verified IS NULL;
