@@ -1,7 +1,20 @@
 import AccountModel from '../models/AccountModel';
 import AccountValidator from '../validators/AccountValidator';
+import mailer from '../services/mailer';
 
 const AccountController = {
+  async mail(req, res) {
+    if (req.body.email) {
+      mailer.sendMessage(req.body.email, '123');
+      return res.status(200).send('done');
+    }
+    return res.status(400).send('negs');
+  },
+
+  async validateAccount(req, res) {
+    res.status(200).send('validate endpoint hittered');
+  },
+
   async create(req, res) {
     const errors = AccountValidator.onCreate(req);
     if (errors.length > 0) {
