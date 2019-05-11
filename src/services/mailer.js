@@ -11,7 +11,9 @@ const mailer = {
       from: 'verify@oozetracker.com',
       subject: 'Welcome to Green Track! Please Confirm Your Email',
       text: `Click on this link to verify your email ${hostUrl}/verification?token=${token}&email=${toEmail}`,
-      html: `<strong>Click on this link to verify your email ${hostUrl}/verification?token=${token}&email=${toEmail}</strong>`,
+      html: `<strong>
+        Click <a href="${hostUrl}/api/v1/verification?token=${token}&email=${toEmail}">here</a> to verify your email
+        </strong>`,
     };
     sendGridMail.send(msg);
   }

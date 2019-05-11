@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 router.post('/api/v1/register', apiRegisterLimiter, AccountController.create);
 router.post('/api/v1/login', apiLoginLimiter, AccountController.login);
 router.delete('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.delete);
-router.post('/api/v1/verification', AccountController.validateAccount);
+router.get('/api/v1/verification', AccountController.validateAccount);
 
 router.post('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.create);
 router.get('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.getAll);

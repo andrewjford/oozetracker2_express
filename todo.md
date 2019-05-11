@@ -4,5 +4,6 @@
   - activate account
   - delete verification code after x days
   - allow regenerate/resend of verification or delete user after xy days
+- rate limit the verification endpoint
 - dos prevention module
 - sanitize input
