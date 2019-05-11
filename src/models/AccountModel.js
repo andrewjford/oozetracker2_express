@@ -1,6 +1,7 @@
 import db from '../services/dbService';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import VerificationTokensModel from './VerificationTokensModel';
 
 const AccountModel = {
   async create(req) {
@@ -17,6 +18,12 @@ const AccountModel = {
     ];
 
     const { rows } = await db.query(sqlString, values);
+
+    VerificationTokensModel.create({
+      account_id: rows[0].id,
+      email: req.body.email,
+    });
+
     const tokenExpiration = 24*60*60;
     const token = jwt.sign({id: rows[0].id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
 

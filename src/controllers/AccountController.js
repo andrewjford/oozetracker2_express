@@ -1,7 +1,32 @@
 import AccountModel from '../models/AccountModel';
 import AccountValidator from '../validators/AccountValidator';
+import mailer from '../services/mailer';
+import db from '../services/dbService';
 
 const AccountController = {
+  async mail(req, res) {
+    if (req.body.email) {
+      mailer.sendMessage(req.body.email, '123');
+      return res.status(200).send('done');
+    }
+    return res.status(400).send('negs');
+  },
+
+  async validateAccount(req, res) {
+    console.log(req.query.token);
+    const query = `SELECT v.*, a.*
+      FROM verification_tokens v 
+      LEFT JOIN accounts a ON v.account_id = a.id
+      WHERE v.token = $1`;
+    const { rows } = await db.query(query, [req.query.token]);
+    if (rows && rows.length > 0) {
+      // update account
+      // delete verification token
+      console.log(rows[0]);
+    }
+    res.status(200).send('validate endpoint hittered');
+  },
+
   async create(req, res) {
     const errors = AccountValidator.onCreate(req);
     if (errors.length > 0) {
