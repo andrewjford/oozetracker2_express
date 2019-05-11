@@ -1,3 +1,8 @@
 - wrap index router with a function that auto calls auth
+- email verification
+  - send email
+  - activate account
+  - delete verification code after x days
+  - allow regenerate/resend of verification or delete user after xy days
 - dos prevention module
 - sanitize input
