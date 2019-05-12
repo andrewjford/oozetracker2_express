@@ -13,18 +13,20 @@ const AccountController = {
   },
 
   async validateAccount(req, res) {
-    console.log(req.query.token);
     const query = `SELECT v.*, a.*
       FROM verification_tokens v 
       LEFT JOIN accounts a ON v.account_id = a.id
       WHERE v.token = $1`;
     const { rows } = await db.query(query, [req.query.token]);
+
     if (rows && rows.length > 0) {
       // update account
       // delete verification token
       console.log(rows[0]);
+      res.status(200).send('validate endpoint hittered');
+    } else {
+      return res.status(400).send('Invalid token');
     }
-    res.status(200).send('validate endpoint hittered');
   },
 
   async create(req, res) {

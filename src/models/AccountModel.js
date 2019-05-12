@@ -44,6 +44,9 @@ const AccountModel = {
     return db.query(queryText, [email]);
   },
 
+  async update(req) {
+  },
+
   async delete(req) {
     const deleteQuery = 'DELETE FROM accounts WHERE id = $1';
     return db.query(deleteQuery, [req.accountId]);
@@ -70,6 +73,19 @@ const AccountModel = {
       token,
       tokenExpiration
     };
+  },
+
+  async validateAccount(req) {
+    const query = `SELECT v.*, a.*
+      FROM verification_tokens v 
+      LEFT JOIN accounts a ON v.account_id = a.id
+      WHERE v.token = $1`;
+    const { rows } = await db.query(query, [req.query.token]);
+    if (rows && rows.length > 0) {
+      // update account
+      // delete verification token
+      console.log(rows[0]);
+    }
   }
 }
 
