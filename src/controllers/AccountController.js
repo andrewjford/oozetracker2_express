@@ -1,13 +1,15 @@
 import AccountModel from '../models/AccountModel';
 import AccountValidator from '../validators/AccountValidator';
-import mailer from '../services/mailer';
 import db from '../services/dbService';
+import models from '../models/models';
 
 const AccountController = {
   async mail(req, res) {
-    if (req.body.email) {
-      mailer.sendMessage(req.body.email, '123');
-      return res.status(200).send('done');
+    if (req.body.token) {
+      return models.VerificationToken.create({
+        token: '100',
+        account_id: 1,
+      });
     }
     return res.status(400).send('negs');
   },
