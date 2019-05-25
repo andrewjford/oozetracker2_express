@@ -3,7 +3,7 @@ import sgMail from '@sendgrid/mail';
 const hostUrl = process.env.HOST_URL;
 
 const mailer = {
-  async sendMessage(toEmail, token) {
+  async sendVerificationMessage(toEmail, token) {
     const sendGridMail = sgMail;
     sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {

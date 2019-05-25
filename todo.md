@@ -1,7 +1,10 @@
-- wrap index router with a function that auto calls auth
+- was apparently sequelizing
 - email verification
   - send email
+    - email link should work in verification
   - activate account
+    - default account to inactive
+    - activate after email verification success
   - delete verification code after x days
   - allow regenerate/resend of verification or delete user after xy days
 - rate limit the verification endpoint
