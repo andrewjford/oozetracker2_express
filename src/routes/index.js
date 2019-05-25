@@ -32,6 +32,6 @@ router.delete('/api/v1/categories/:id', authMiddleware.validateToken, CategoryCo
 router.get('/api/v1/reports/recent', authMiddleware.validateToken, ExpenseController.getRecentExpenses);
 router.post('/api/v1/reports/monthly', authMiddleware.validateToken, Report.getMonthly);
 
-router.post('/api/v1/mail', AccountController.mail);
+// router.post('/api/v1/mail', AccountController.mail);
 
 export default router;
