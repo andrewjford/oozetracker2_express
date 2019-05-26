@@ -8,7 +8,7 @@ const mailer = {
     sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: toEmail,
-      from: 'Cash Tracker',
+      from: 'verify@cashtracker.tech',
       subject: 'Welcome to Cash Tracker! Please Confirm Your Email',
       text: `Click on this link to verify your email ${hostUrl}/verification?token=${token}&email=${toEmail}`,
       html: `<strong>
