@@ -12,7 +12,7 @@ const mailer = {
       subject: 'Welcome to Cash Tracker! Please Confirm Your Email',
       text: `Click on this link to verify your email ${hostUrl}/verification?token=${token}&email=${toEmail}`,
       html: `<strong>
-        Click <a href="http://${hostUrl}/api/v1/verification?token=${token}&email=${toEmail}">here</a> to verify your email
+        Click <a href="${hostUrl}/api/v1/verification?token=${token}&email=${toEmail}">here</a> to verify your email
         </strong>`,
     };
     sendGridMail.send(msg);
