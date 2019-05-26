@@ -1,7 +1,8 @@
 import db from '../services/dbService';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import VerificationTokensModel from './VerificationTokensModel';
+import models from '../models/models';
+import mailer from '../services/mailer';
 
 const AccountModel = {
   async create(req) {
@@ -18,11 +19,13 @@ const AccountModel = {
     ];
 
     const { rows } = await db.query(sqlString, values);
-
-    VerificationTokensModel.create({
+    const verificationToken = await bcrypt.hash(rows[0].email, 10);
+    const verificationTokenModel = await models.VerificationToken.create({
+      token: verificationToken,
       account_id: rows[0].id,
-      email: req.body.email,
     });
+
+    mailer.sendVerificationMessage(rows[0].email, verificationTokenModel.token);
 
     const tokenExpiration = 24*60*60;
     const token = jwt.sign({id: rows[0].id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
