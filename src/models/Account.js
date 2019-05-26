@@ -6,7 +6,7 @@ const account = (sequelize, DataTypes) => {
     name: DataTypes.TEXT,
     email: DataTypes.TEXT,
     password: DataTypes.TEXT,
-    isVerified: DataTypes.BOOLEAN,
+    isVerified: {type: DataTypes.BOOLEAN, defaultValue: false},
   }, {
     underscored: true,
     sequelize,

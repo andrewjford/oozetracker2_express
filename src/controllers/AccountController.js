@@ -2,18 +2,11 @@ import AccountModel from '../models/AccountModel';
 import AccountValidator from '../validators/AccountValidator';
 import db from '../services/dbService';
 import models from '../models/models';
+import bcrypt from 'bcryptjs';
+import mailer from '../services/mailer';
+import jwt from 'jsonwebtoken';
 
 const AccountController = {
-  async mail(req, res) {
-    if (req.body.token) {
-      return models.VerificationToken.create({
-        token: '100',
-        account_id: 1,
-      });
-    }
-    return res.status(400).send('negs');
-  },
-
   async validateAccount(req, res) {
     const query = `SELECT v.*, a.*
       FROM verification_tokens v 
@@ -38,13 +31,38 @@ const AccountController = {
     }
 
     try {
-      const modelResponse = await AccountModel.create(req);
-      return res.status(201).send(modelResponse);
+      const password = await bcrypt.hash(req.body.password, 10);
+      const account = await models.Account.create({
+        name: req.body.name,
+        email: req.body.email,
+        password,
+      })
+      .catch(error => {
+        if (error.parent.code === '23505') {
+          return res.status(422).send({message: ["A user already exists for this email."]});
+        } else {
+          throw Error(error);
+        }
+      });
+
+      const verificationToken = await bcrypt.hash(account.email, 10);
+      const verificationTokenModel = await models.VerificationToken.create({
+        token: verificationToken,
+        account_id: account.id,
+      });
+
+      mailer.sendVerificationMessage(account.email, verificationTokenModel.token);
+
+      const tokenExpiration = 24*60*60;
+      const token = jwt.sign({id: account.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
+
+      return res.status(201).send({
+        user: account, // prob need to strip this down
+        token,
+        tokenExpiration
+      });
     } catch(error) {
-      if (error.code === '23505') {
-        return res.status(422).send({message: ["A user already exists for this email."]});
-      }
-      return res.status(400).send("error creating user");
+      return res.status(400).send({message: ["error creating user"]});
     }
   },
 
