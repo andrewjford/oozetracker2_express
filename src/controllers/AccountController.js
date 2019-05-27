@@ -1,10 +1,11 @@
 import AccountModel from '../models/AccountModel';
 import AccountValidator from '../validators/AccountValidator';
+import VerificationTokenController from './VerificationTokenController';
 import db from '../services/dbService';
 import models from '../models/models';
 import bcrypt from 'bcryptjs';
-import mailer from '../services/mailer';
 import jwt from 'jsonwebtoken';
+import mailer from '../services/mailer';
 
 const AccountController = {
   async validateAccount(req, res) {
@@ -15,12 +16,22 @@ const AccountController = {
     const { rows } = await db.query(query, [req.query.token]);
 
     if (rows && rows.length > 0) {
-      // update account
-      // delete verification token
-      console.log(rows[0]);
-      res.status(200).send('validate endpoint hittered');
+      try {
+        const updatedAccount = await models.Account.update(
+          {isVerified: true},
+          {where: {id: rows[0].id}}
+        );
+
+        models.VerificationToken.destroy({
+          where: {account_id: rows[0].id}
+        });
+        return res.status(200).send({message: "email successfully verified"});
+      } catch(error) {
+        console.log('error updating account... '+error);
+        return res.status(500).send({message: "internal server error"});
+      }
     } else {
-      return res.status(400).send('Invalid token');
+      return res.status(400).send({message: "Unable to resolve email verification."});
     }
   },
 
@@ -45,13 +56,12 @@ const AccountController = {
         }
       });
 
-      const verificationToken = await bcrypt.hash(account.email, 10);
-      const verificationTokenModel = await models.VerificationToken.create({
-        token: verificationToken,
-        account_id: account.id,
-      });
-
-      mailer.sendVerificationMessage(account.email, verificationTokenModel.token);
+      const verificationTokenModel = await VerificationTokenController.create(req, res, account);
+      mailer.sendVerificationMessage(account.email, verificationTokenModel.token)
+        .catch(error => {
+          console.log(`error sending email: ${error}`);
+          return res.status(500).send({message: "Error sending email."});
+        });
 
       const tokenExpiration = 24*60*60;
       const token = jwt.sign({id: account.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
@@ -88,7 +98,7 @@ const AccountController = {
     try {
       const result = await AccountModel.delete(req);
       if(result.rowCount === 0) {
-        return res.status(404).send({'message': 'category not found'});
+        return res.status(404).send({'message': 'account not found'});
       }
       return res.status(204).send({ 'message': 'deleted' });
     } catch(error) {
