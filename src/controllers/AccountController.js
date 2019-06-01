@@ -6,6 +6,7 @@ import models from '../models/models';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import mailer from '../services/mailer';
+import CategoryModel from '../models/CategoryModel';
 
 const AccountController = {
   async validateAccount(req, res) {
@@ -62,6 +63,13 @@ const AccountController = {
           console.log(`error sending email: ${error}`);
           return res.status(500).send({message: "Error sending email."});
         });
+
+      CategoryModel.create({
+        body: {
+          name: "Groceries",
+        },
+        accountId: account.id
+      });
 
       const tokenExpiration = 24*60*60;
       const token = jwt.sign({id: account.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
