@@ -5,6 +5,7 @@ import Report from '../controllers/Report';
 import AccountController from '../controllers/AccountController';
 import authMiddleware from '../services/authMiddleware';
 import { apiRegisterLimiter, apiLoginLimiter } from '../services/rateLimitMiddleware';
+import VerificationTokenController from '../controllers/VerificationTokenController';
 
 const router = express.Router();
 
@@ -14,7 +15,10 @@ router.get('/', (req, res) => {
 
 router.post('/api/v1/register', apiRegisterLimiter, AccountController.create);
 router.post('/api/v1/login', apiLoginLimiter, AccountController.login);
+router.get('/api/v1/verification', AccountController.validateAccount);
+
 router.delete('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.delete);
+router.get('/api/v1/registration/email', apiRegisterLimiter, VerificationTokenController.resendEmailVerification);
 
 router.post('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.create);
 router.get('/api/v1/expenses', authMiddleware.validateToken, ExpenseController.getAll);

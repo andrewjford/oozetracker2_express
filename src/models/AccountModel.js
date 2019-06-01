@@ -1,6 +1,8 @@
 import db from '../services/dbService';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import models from '../models/models';
+import mailer from '../services/mailer';
 
 const AccountModel = {
   async create(req) {
@@ -17,6 +19,14 @@ const AccountModel = {
     ];
 
     const { rows } = await db.query(sqlString, values);
+    const verificationToken = await bcrypt.hash(rows[0].email, 10);
+    const verificationTokenModel = await models.VerificationToken.create({
+      token: verificationToken,
+      account_id: rows[0].id,
+    });
+
+    mailer.sendVerificationMessage(rows[0].email, verificationTokenModel.token);
+
     const tokenExpiration = 24*60*60;
     const token = jwt.sign({id: rows[0].id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
 
@@ -35,6 +45,9 @@ const AccountModel = {
   async getByEmail(email) {
     const queryText = 'SELECT * FROM accounts WHERE email = $1';
     return db.query(queryText, [email]);
+  },
+
+  async update(req) {
   },
 
   async delete(req) {
@@ -63,6 +76,19 @@ const AccountModel = {
       token,
       tokenExpiration
     };
+  },
+
+  async validateAccount(req) {
+    const query = `SELECT v.*, a.*
+      FROM verification_tokens v 
+      LEFT JOIN accounts a ON v.account_id = a.id
+      WHERE v.token = $1`;
+    const { rows } = await db.query(query, [req.query.token]);
+    if (rows && rows.length > 0) {
+      // update account
+      // delete verification token
+      console.log(rows[0]);
+    }
   }
 }
 

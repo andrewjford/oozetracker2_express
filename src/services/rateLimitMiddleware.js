@@ -3,8 +3,9 @@ import rateLimit from 'express-rate-limit';
 export const apiRegisterLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 minutes
   max: 7,
-  message:
-    "Too many accounts created from this IP, please try again after an hour"
+  message: {
+    message: "Too many accounts created from this IP, please try again after an hour"
+  }
 });
 
 export const apiLoginLimiter = rateLimit({
