@@ -12,12 +12,18 @@ const ExpenseModel = {
     FROM inserted
     INNER JOIN categories c ON inserted.category = c.id`;
 
+    const recordDate = new Date();
+    const splitDate = req.body.date.split('-').map(each => parseInt(each));
+    recordDate.setFullYear(splitDate[0]);
+    recordDate.setMonth(splitDate[1] - 1);
+    recordDate.setDate(splitDate[2]);
+
     const values = [
       uuidv4(),
       req.body.amount,
       moment(new Date()),
       moment(new Date()),
-      moment(new Date(req.body.date)),
+      moment(recordDate),
       req.body.description,
       req.body.category,
       req.accountId,

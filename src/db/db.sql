@@ -4,13 +4,13 @@ CREATE TABLE IF NOT EXISTS users (
   email text UNIQUE, 
   password text, 
   created_date timestamptz NOT NULL DEFAULT NOW(), 
-  modified_date timestamptz NOT NULL DEFAULT NOW()
+  updated_at timestamptz NOT NULL DEFAULT NOW()
   );
 
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
   RETURNS TRIGGER AS $$
   BEGIN
-    NEW.modified_date = NOW();
+    NEW.updated_at = NOW();
     RETURN NEW;
   END;
   $$ LANGUAGE plpgsql;
