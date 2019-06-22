@@ -16,6 +16,7 @@ const verificationToken = (sequelize, DataTypes) => {
         name: 'account_id',
         allowNull: false,
       },
+      onDelete: 'CASCADE'
     });
   }
 

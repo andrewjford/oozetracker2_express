@@ -104,12 +104,15 @@ const AccountController = {
 
   async delete(req, res) {
     try {
-      const result = await AccountModel.delete(req);
+      const result = models.Account.destroy({
+        where: {id: req.accountId}
+      });
       if(result.rowCount === 0) {
         return res.status(404).send({'message': 'account not found'});
       }
       return res.status(204).send({ 'message': 'deleted' });
     } catch(error) {
+      console.log(error);
       return res.status(400).send(error);
     }
   }

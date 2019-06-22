@@ -1,9 +1,9 @@
 import app from "../app";
 import request from "supertest";
 
-describe("POST /api/v1/register", () => {
-  const TEST_EMAIL = "testworth1@test.test";
-  const TEST_PASSWORD = "test";
+describe("account endpoints", () => {
+  const TEST_EMAIL = "testworthy4@test.test";
+  const TEST_PASSWORD = "testgoodpassword1!";
   let accountId;
   let token;
 

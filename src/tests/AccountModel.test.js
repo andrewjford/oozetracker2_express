@@ -5,15 +5,16 @@ describe("account model tests", () => {
   let accountId;
 
   it("should create a user", async () => {
+    const EMAIL = "testworth10@test.test";
     const req = {
       body: {
         name: "mr Testworth",
-        email: "testworth5@test.test",
-        password: "test"
+        email: EMAIL,
+        password: "testgoodpassword!111"
       },
     };
     const result = await AccountModel.create(req);
-    expect(result.user.email).toEqual("testworth5@test.test");
+    expect(result.user.email).toEqual(EMAIL);
     accountId = result.user.id;
   });
 
