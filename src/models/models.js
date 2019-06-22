@@ -10,6 +10,7 @@ const sequelize = new Sequelize(
 const models = {
   Account: sequelize.import('./Account'),
   VerificationToken: sequelize.import('./VerificationToken'),
+  Category: sequelize.import('./Category')
 };
 
 Object.keys(models).forEach(key => {
