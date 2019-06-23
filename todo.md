@@ -1,4 +1,8 @@
+- test changes to expenses schema local
+  - then update heroku schema
 - was apparently sequelizing
+  - sequelize expenses
+  - make expenses endpoint that allows getting expenses by category and month (expenses search)
 - email verification
   - send email
     - email link should work in verification
