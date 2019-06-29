@@ -68,7 +68,7 @@ const AccountModel = {
       return {status: "Unauthorized", message: "Password not valid"};
     }
 
-    const tokenExpiration = 24*60*60;
+    const tokenExpiration = req.header("Client") === "mobile" ? 24*60*60*30 : 24*60*60;
     const token = jwt.sign({id: user.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
     return {
       status: "Success",
