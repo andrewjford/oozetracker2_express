@@ -3,6 +3,8 @@ import moment from "moment";
 
 import ExpenseModel from "../models/ExpenseModel";
 import models from "../models/models";
+import ExpenseValidator from "../validators/ExpenseValidator";
+import Sequelize from 'sequelize';
 
 const ExpenseController = {
   async create(req, res) {
@@ -22,7 +24,7 @@ const ExpenseController = {
       recordDate.setFullYear(splitDate[0]);
       recordDate.setMonth(splitDate[1] - 1);
       recordDate.setDate(splitDate[2]);
-
+      
       const newExpense = await models.Expense.create({
         id: uuidv4(),
         amount: req.body.amount,
@@ -42,10 +44,45 @@ const ExpenseController = {
 
   async getAll(req, res) {
     try {
-      const { rows, rowCount } = await ExpenseModel.getAll(req);
-      return res.status(200).send({ rows, rowCount });
+      const validationErrors = ExpenseValidator.onSearch(req);
+      if (validationErrors.length > 0) {
+        return res.status(400).send({message: validationErrors});
+      }
+
+      const whereObject = {
+        account_id: req.accountId
+      }
+
+      if (req.query.categoryId) {
+        whereObject.category_id = req.query.categoryId;
+      }
+
+      if (req.query.startDate) {
+        whereObject.date = {
+          [Sequelize.Op.between]: [req.query.startDate, req.query.endDate]
+        }
+      }
+
+      const columns = [
+        "amount",
+        "description",
+        "date",
+        "account_id",
+        "category_id"
+      ];
+
+      const expenses = await models.Expense.findAll({
+        attributes: columns,
+        include: [{ model: models.Category, attributes: ['name'] }],
+        where: whereObject,
+        order: [["date","DESC"]],
+        limit: req.query.pageSize || 20,
+        ...(req.query.offset ? {offset: req.query.offset} : {}),
+      });
+
+      return res.status(200).send({ expenses, rowCount: expenses.length });
     } catch (error) {
-      return res.status(400).send(error);
+      return res.status(400).send({message: [error.toString()]});
     }
   },
 
