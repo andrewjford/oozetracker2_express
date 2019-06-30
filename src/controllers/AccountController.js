@@ -46,7 +46,7 @@ const AccountController = {
       const password = await bcrypt.hash(req.body.password, 10);
       const account = await models.Account.create({
         name: req.body.name,
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         password,
       })
       .catch(error => {
