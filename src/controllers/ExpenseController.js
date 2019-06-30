@@ -67,6 +67,7 @@ const ExpenseController = {
         "amount",
         "description",
         "date",
+        "id",
         "account_id",
         "category_id"
       ];
