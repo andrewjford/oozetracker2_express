@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const authMiddleware = {
   validateToken(req, res, next) {
-    let token = req.headers['authorization'];
-    if (token && token.startsWith('Bearer ')) {
+    let token = req.headers["authorization"];
+    if (token && token.startsWith("Bearer ")) {
       token = token.slice(7);
     }
 
@@ -12,7 +12,7 @@ const authMiddleware = {
         if (err) {
           return res.status(401).json({
             success: false,
-            message: 'Token is not valid'
+            message: "Token is not valid"
           });
         } else {
           req.accountId = decoded.id;
@@ -22,9 +22,9 @@ const authMiddleware = {
     } else {
       return res.status(401).send({
         success: false,
-        message: 'No valid token provided'
+        message: "No valid token provided"
       });
     }
   }
-}
+};
 export default authMiddleware;
