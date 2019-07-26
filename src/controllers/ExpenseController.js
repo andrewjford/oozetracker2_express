@@ -63,6 +63,15 @@ const ExpenseController = {
         }
       }
 
+      let limit;
+      if (req.query.pageSize === "ALL") {
+        limit = null;
+      } else if (req.query.pageSize) {
+        limit = req.query.pageSize;
+      } else {
+        limit = 20;
+      }
+
       const columns = [
         "amount",
         "description",
@@ -77,7 +86,7 @@ const ExpenseController = {
         include: [{ model: models.Category, attributes: ['name'] }],
         where: whereObject,
         order: [["date","DESC"]],
-        limit: req.query.pageSize || 20,
+        limit,
         ...(req.query.offset ? {offset: req.query.offset} : {}),
       });
 
