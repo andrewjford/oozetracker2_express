@@ -14,7 +14,8 @@ const Report = {
       WHERE e.date >= $1 AND
         e.date < $2 AND
         e.account_id = $3
-      GROUP BY c.id`;
+      GROUP BY c.id
+      ORDER BY c.name`;
 
     const values = [
       `${requestedMonth.getFullYear()}-${requestedMonth.getMonth()+1}-01`,
