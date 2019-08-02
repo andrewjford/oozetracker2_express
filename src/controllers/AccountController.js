@@ -84,6 +84,28 @@ const AccountController = {
     }
   },
 
+  async update(req, res) {
+    // const errors = AccountValidator.onUpdate(req);
+    // if (errors.length > 0) {
+    //   return res.status(422).send({ message: errors });
+    // }
+
+    // const passwordIsCorrect = bcrypt.compareSync(req.body.oldPassword, user.password);
+    // if (!passwordIsCorrect) {
+    //   return {status: "Unauthorized", message: "Password not valid"};
+    // }
+
+    // try {
+    //   const password = await bcrypt.hash(req.body.newPassword, 10);
+    //   const account = await models.Account.update({
+    //     name: req.body.name,
+    //     password,
+    //   })
+    //   .catch(error => {
+    //     throw Error(error);
+    //   });
+  },
+
   async login(req, res) {
     try {
       const result = await AccountModel.login(req);
