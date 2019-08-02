@@ -21,7 +21,8 @@ const AccountModel = {
         status: "Not Found", message: "Account not found for provided email"};
     }
 
-    if (!validPassword(user, req.body.password)) {
+    const passwordIsCorrect = bcrypt.compareSync(req.body.password, user.password);
+    if (!passwordIsCorrect) {
       return {status: "Unauthorized", message: "Password not valid"};
     }
 
@@ -33,10 +34,6 @@ const AccountModel = {
       token,
       tokenExpiration
     };
-  },
-
-  async validPassword(user, password) {
-    return bcrypt.compareSync(password, user.password);
   },
 
   async validateAccount(req) {
