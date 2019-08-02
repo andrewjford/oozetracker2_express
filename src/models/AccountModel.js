@@ -21,7 +21,7 @@ const AccountModel = {
         status: "Not Found", message: "Account not found for provided email"};
     }
 
-    if (!validPassword) {
+    if (!validPassword(user, req.body.password)) {
       return {status: "Unauthorized", message: "Password not valid"};
     }
 
