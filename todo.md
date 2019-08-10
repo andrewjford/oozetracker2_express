@@ -1,5 +1,5 @@
-- ignore case for email
-- email verification
+- update account
+- email verification (deprioritized)
   - send email
     - email link should work in verification
   - activate account

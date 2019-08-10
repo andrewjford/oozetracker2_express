@@ -9,8 +9,8 @@ import VerificationTokenController from '../controllers/VerificationTokenControl
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  return res.status(200).send({'message': 'YAY!'});
+router.get('/api/v1/ping', apiLoginLimiter, (req, res) => {
+  return res.status(200).send({'message': 'pong!'});
 });
 
 router.post('/api/v1/register', apiRegisterLimiter, AccountController.create);
