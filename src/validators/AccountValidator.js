@@ -25,7 +25,7 @@ const AccountValidator = {
 
   onUpdate(req) {
     const errors = [];
-    if (!req.body.name || !(req.body.oldPassword && req.body.newPassword)) {
+    if (!(req.body.name || (req.body.oldPassword && req.body.newPassword))) {
       errors.push("Missing required param(s)");
     }
 
@@ -34,6 +34,7 @@ const AccountValidator = {
         "Password must be at least 8 characters long, and include only alphanumerics and standard symbols"
       );
     }
+    return errors;
   }
 };
 
