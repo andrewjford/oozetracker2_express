@@ -38,6 +38,17 @@ const AccountController = {
     }
   },
 
+  async getOne(req, res) {
+    const user = await models.Account.findOne({
+      where: { id: req.accountId }
+    });
+
+    return res.status(200).send({
+      name: user.name,
+      email: user.email,
+    });
+  },
+
   async create(req, res) {
     const errors = AccountValidator.onCreate(req);
     if (errors.length > 0) {

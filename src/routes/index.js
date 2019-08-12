@@ -17,6 +17,7 @@ router.post('/api/v1/register', apiRegisterLimiter, AccountController.create);
 router.post('/api/v1/login', apiLoginLimiter, AccountController.login);
 router.get('/api/v1/verification', AccountController.validateAccount);
 
+router.get('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.getOne);
 router.delete('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.delete);
 router.put('/api/v1/accounts/:id', authMiddleware.validateToken, AccountController.update);
 router.get('/api/v1/registration/email', apiRegisterLimiter, VerificationTokenController.resendEmailVerification);
