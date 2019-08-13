@@ -1,4 +1,5 @@
 - update account
+  - check if confirm = newpassword
 - email verification (deprioritized)
   - send email
     - email link should work in verification

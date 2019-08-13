@@ -46,6 +46,7 @@ const AccountController = {
     return res.status(200).send({
       name: user.name,
       email: user.email,
+      id: user.id,
     });
   },
 
