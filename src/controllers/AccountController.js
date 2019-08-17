@@ -109,6 +109,7 @@ const AccountController = {
   async update(req, res) {
     const errors = AccountValidator.onUpdate(req);
     if (errors.length > 0) {
+      console.log(errors)
       return res.status(422).send({ message: errors });
     }
 
@@ -128,8 +129,8 @@ const AccountController = {
     );
     if (!passwordIsCorrect) {
       return res
-        .status(200)
-        .send({ status: "Unauthorized", message: "Password not valid" });
+        .status(400)
+        .send({ status: "Unauthorized", message: "Old password not valid" });
     }
 
     try {

@@ -34,6 +34,11 @@ const AccountValidator = {
         "Password must be at least 8 characters long, and include only alphanumerics and standard symbols"
       );
     }
+
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      errors.push("new password and confirmed new password must be the same");
+    }
+    
     return errors;
   }
 };
