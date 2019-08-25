@@ -1,3 +1,4 @@
+- reset password feature
 - email verification (deprioritized)
   - send email
     - email link should work in verification
