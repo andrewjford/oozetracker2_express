@@ -3,7 +3,7 @@
 
 # misc
 .env
-.dump
+*.dump
 
 npm-debug.log*
 yarn-debug.log*
