@@ -1,3 +1,9 @@
+- aws
+  - test pointing local to aws test
+  - make prod version on aws
+  - test pointing local to prod
+  - point netlify to prod
+  - point mobile to prod
 - reset password feature
 - email verification (deprioritized)
   - send email
