@@ -1,4 +1,5 @@
 - aws
+  - make api.cashtracker.club use SSL
   - test pointing local to aws test
   - make prod version on aws
   - test pointing local to prod
