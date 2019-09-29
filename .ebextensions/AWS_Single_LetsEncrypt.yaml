@@ -77,6 +77,6 @@ container_commands:
   30_link:
     command: "ln -sf /etc/letsencrypt/live/${certdomain} /etc/letsencrypt/live/ebcert"
   40_config:
-    command: "mv /etc/nginx/conf.d/https_custom.pre /etc/nginx/conf.d/https_custom.conf"
+    command: "mv /etc/nginx/conf.d/https_custom.pre /var/elasticbeanstalk/staging/nginx/conf.d/https_custom.conf"
   50_restartnginx:
     command: "sudo service nginx restart"
