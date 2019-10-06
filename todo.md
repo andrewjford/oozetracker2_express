@@ -1,10 +1,5 @@
-- aws
-  - make api.cashtracker.club use SSL
-  - test pointing local to aws test
-  - make prod version on aws
-  - test pointing local to prod
-  - point netlify to prod
-  - point mobile to prod
+- reactivate sendgrid
+- repoint mobile
 - reset password feature
 - email verification (deprioritized)
   - send email
