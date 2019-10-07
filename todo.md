@@ -1,5 +1,4 @@
 - reactivate sendgrid
-- repoint mobile
 - reset password feature
 - email verification (deprioritized)
   - send email
