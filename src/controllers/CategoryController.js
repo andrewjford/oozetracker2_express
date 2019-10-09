@@ -1,14 +1,20 @@
 import CategoryModel from '../models/CategoryModel';
+import models from '../models/models';
 
 const CategoryController = {
 
   async create(req, res) {
-    try {
-      const { rows } = await CategoryModel.create(req);
-      return res.status(201).send(rows[0]);
-    } catch(error) {
-      return res.status(400).send(error);
-    }
+    return models.Category.create({
+        name: req.body.name,
+        account_id: req.accountId
+      })
+      .then(result => {
+        return res.status(201).send(result);
+      })
+      .catch(error => {
+        console.log(`error creating category: ${error}`);
+        return res.status(500).send({message: "Internal Server error."});
+      });
   },
 
   async getAll(req, res) {

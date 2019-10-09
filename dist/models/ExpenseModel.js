@@ -1,6 +1,17 @@
-import moment from 'moment';
-import uuidv4 from 'uuid/v4';
-import db from '../services/dbService';
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _moment = _interopRequireDefault(require("moment"));
+
+var _v = _interopRequireDefault(require("uuid/v4"));
+
+var _dbService = _interopRequireDefault(require("../services/dbService"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const ExpenseModel = {
   async create(req) {
@@ -11,29 +22,21 @@ const ExpenseModel = {
     SELECT inserted.*, c.name AS name
     FROM inserted
     INNER JOIN categories c ON inserted.category_id = c.id`;
-
     const recordDate = new Date();
     const splitDate = req.body.date.split('-').map(each => parseInt(each));
     recordDate.setFullYear(splitDate[0]);
     recordDate.setMonth(splitDate[1] - 1);
     recordDate.setDate(splitDate[2]);
-
-    const values = [
-      uuidv4(),
-      req.body.amount,
-      moment(recordDate),
-      req.body.description,
-      req.body.category,
-      req.accountId,
-    ];
-
-    const { rows } = await db.query(text, values);
+    const values = [(0, _v.default)(), req.body.amount, (0, _moment.default)(recordDate), req.body.description, req.body.category, req.accountId];
+    const {
+      rows
+    } = await _dbService.default.query(text, values);
     return rows;
   },
 
   getAll(req) {
     const findAllQuery = 'SELECT * FROM expenses WHERE account_id = $1';
-    return db.query(findAllQuery, [req.accountId]);
+    return _dbService.default.query(findAllQuery, [req.accountId]);
   },
 
   getOne(req) {
@@ -41,7 +44,7 @@ const ExpenseModel = {
       FROM expenses e 
       LEFT JOIN categories c ON e.category_id = c.id
       WHERE e.id = $1 AND e.account_id = $2`;
-    return db.query(query, [req.params.id, req.accountId]);
+    return _dbService.default.query(query, [req.params.id, req.accountId]);
   },
 
   update(req, existingRecord) {
@@ -53,21 +56,13 @@ const ExpenseModel = {
       SELECT updated.*, c.name
       FROM updated
       INNER JOIN categories c ON updated.category_id = c.id`;
-
-    const values = [
-      req.body.amount || existingRecord.amount,
-      req.body.date ? moment(new Date(req.body.date)) : existingRecord.date,
-      req.body.description ? req.body.description : existingRecord.description,
-      req.body.category ? req.body.category : existingRecord.category,
-      req.params.id
-    ];
-
-    return db.query(updateOneQuery, values);
+    const values = [req.body.amount || existingRecord.amount, req.body.date ? (0, _moment.default)(new Date(req.body.date)) : existingRecord.date, req.body.description ? req.body.description : existingRecord.description, req.body.category ? req.body.category : existingRecord.category, req.params.id];
+    return _dbService.default.query(updateOneQuery, values);
   },
 
   delete(req) {
     const deleteQuery = 'DELETE FROM expenses WHERE id = $1 AND account_id = $2 RETURNING *';
-    return db.query(deleteQuery, [req.params.id, req.accountId]);
+    return _dbService.default.query(deleteQuery, [req.params.id, req.accountId]);
   },
 
   getRecentExpenses(req) {
@@ -76,8 +71,9 @@ const ExpenseModel = {
       LEFT JOIN categories c ON e.category_id = c.id 
       WHERE e.account_id = $1
       ORDER BY e.date DESC, e.created_at DESC LIMIT 10`;
-    return db.query(getQuery, [req.accountId]);
+    return _dbService.default.query(getQuery, [req.accountId]);
   }
-}
 
-export default ExpenseModel;
+};
+var _default = ExpenseModel;
+exports.default = _default;

@@ -1,5 +1,6 @@
-- was apparently sequelizing
-- email verification
+- reactivate sendgrid
+- reset password feature
+- email verification (deprioritized)
   - send email
     - email link should work in verification
   - activate account

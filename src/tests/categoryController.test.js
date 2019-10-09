@@ -27,7 +27,7 @@ describe("GET /api/v1/categories", () => {
       .get("/api/v1/categories")
       .set("Authorization",`Bearer ${token}`);
     expect(result.statusCode).toEqual(200);
-    expect(result.body.rows.length > 0);
+    expect(!!result.body.id);
   });
 });
 

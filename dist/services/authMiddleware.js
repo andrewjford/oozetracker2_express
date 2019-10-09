@@ -1,28 +1,28 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _jsonwebtoken = require('jsonwebtoken');
-
-var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+var _jsonwebtoken = _interopRequireDefault(require("jsonwebtoken"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var authMiddleware = {
-  validateToken: function validateToken(req, res, next) {
-    var token = req.headers['authorization'];
-    if (token && token.startsWith('Bearer ')) {
+const authMiddleware = {
+  validateToken(req, res, next) {
+    let token = req.headers["authorization"];
+
+    if (token && token.startsWith("Bearer ")) {
       token = token.slice(7);
     }
 
     if (token) {
-      _jsonwebtoken2.default.verify(token, process.env.SECRET_KEY, function (err, decoded) {
+      _jsonwebtoken.default.verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if (err) {
-          return res.json({
+          return res.status(401).json({
             success: false,
-            message: 'Token is not valid'
+            message: "Token is not valid"
           });
         } else {
           req.accountId = decoded.id;
@@ -30,11 +30,13 @@ var authMiddleware = {
         }
       });
     } else {
-      return res.json({
+      return res.status(401).send({
         success: false,
-        message: 'Auth token not provided'
+        message: "No valid token provided"
       });
     }
   }
+
 };
-exports.default = authMiddleware;
+var _default = authMiddleware;
+exports.default = _default;
