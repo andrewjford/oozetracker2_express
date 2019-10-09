@@ -26,7 +26,7 @@ const CategoryModel = {
 
   update(req, existingRecord) {
     const updateOneQuery =`UPDATE categories
-      SET name = $1, modified_date = $2
+      SET name = $1, updated_at = $2
       WHERE id = $3 RETURNING *`;
 
     const values = [

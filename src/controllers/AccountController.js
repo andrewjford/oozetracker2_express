@@ -1,12 +1,12 @@
-import AccountModel from '../models/AccountModel';
-import AccountValidator from '../validators/AccountValidator';
-import VerificationTokenController from './VerificationTokenController';
-import db from '../services/dbService';
-import models from '../models/models';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import mailer from '../services/mailer';
-import CategoryModel from '../models/CategoryModel';
+import AccountModel from "../models/AccountModel";
+import AccountValidator from "../validators/AccountValidator";
+import VerificationTokenController from "./VerificationTokenController";
+import db from "../services/dbService";
+import models from "../models/models";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import mailer from "../services/mailer";
+import CategoryModel from "../models/CategoryModel";
 
 const AccountController = {
   async validateAccount(req, res) {
@@ -19,21 +19,35 @@ const AccountController = {
     if (rows && rows.length > 0) {
       try {
         const updatedAccount = await models.Account.update(
-          {isVerified: true},
-          {where: {id: rows[0].id}}
+          { isVerified: true },
+          { where: { id: rows[0].id } }
         );
 
         models.VerificationToken.destroy({
-          where: {account_id: rows[0].id}
+          where: { account_id: rows[0].id }
         });
-        return res.status(200).send({message: "email successfully verified"});
-      } catch(error) {
-        console.log('error updating account... '+error);
-        return res.status(500).send({message: "internal server error"});
+        return res.status(200).send({ message: "email successfully verified" });
+      } catch (error) {
+        console.log("error updating account... " + error);
+        return res.status(500).send({ message: "internal server error" });
       }
     } else {
-      return res.status(400).send({message: "Unable to resolve email verification."});
+      return res
+        .status(400)
+        .send({ message: "Unable to resolve email verification." });
     }
+  },
+
+  async getOne(req, res) {
+    const user = await models.Account.findOne({
+      where: { id: req.accountId }
+    });
+
+    return res.status(200).send({
+      name: user.name,
+      email: user.email,
+      id: user.id,
+    });
   },
 
   async create(req, res) {
@@ -46,41 +60,91 @@ const AccountController = {
       const password = await bcrypt.hash(req.body.password, 10);
       const account = await models.Account.create({
         name: req.body.name,
-        email: req.body.email,
-        password,
-      })
-      .catch(error => {
-        if (error.parent.code === '23505') {
-          return res.status(422).send({message: ["A user already exists for this email."]});
+        email: req.body.email.toLowerCase(),
+        password
+      }).catch(error => {
+        if (error.parent.code === "23505") {
+          return res
+            .status(422)
+            .send({ message: ["A user already exists for this email."] });
         } else {
           throw Error(error);
         }
       });
 
-      const verificationTokenModel = await VerificationTokenController.create(req, res, account);
-      mailer.sendVerificationMessage(account.email, verificationTokenModel.token)
+      const verificationTokenModel = await VerificationTokenController.create(
+        req,
+        res,
+        account
+      );
+      mailer
+        .sendVerificationMessage(account.email, verificationTokenModel.token)
         .catch(error => {
           console.log(`error sending email: ${error}`);
-          return res.status(500).send({message: "Error sending email."});
+          return res.status(500).send({ message: "Error sending email." });
         });
 
       CategoryModel.create({
         body: {
-          name: "Groceries",
+          name: "Groceries"
         },
         accountId: account.id
       });
 
-      const tokenExpiration = 24*60*60;
-      const token = jwt.sign({id: account.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
+      const tokenExpiration = 24 * 60 * 60;
+      const token = jwt.sign({ id: account.id }, process.env.SECRET_KEY, {
+        expiresIn: tokenExpiration
+      });
 
       return res.status(201).send({
         user: account, // prob need to strip this down
         token,
         tokenExpiration
       });
-    } catch(error) {
-      return res.status(400).send({message: ["error creating user"]});
+    } catch (error) {
+      return res.status(400).send({ message: ["error creating user"] });
+    }
+  },
+
+  async update(req, res) {
+    const errors = AccountValidator.onUpdate(req);
+    if (errors.length > 0) {
+      console.log(errors)
+      return res.status(422).send({ message: errors });
+    }
+
+    const user = await models.Account.findOne({
+      where: { id: req.accountId }
+    });
+    if (!user) {
+      return {
+        status: "Not Found",
+        message: "Account not found for provided email"
+      };
+    }
+
+    const passwordIsCorrect = bcrypt.compareSync(
+      req.body.oldPassword,
+      user.password
+    );
+    if (!passwordIsCorrect) {
+      return res
+        .status(400)
+        .send({ status: "Unauthorized", message: "Old password not valid" });
+    }
+
+    try {
+      const password = await bcrypt.hash(req.body.newPassword, 10);
+      await models.Account.update(
+        {
+          name: req.body.name,
+          password
+        },
+        { where: { id: req.accountId } }
+      );
+      return res.status(200).send({ message: "successful update" });
+    } catch (error) {
+      throw Error(error);
     }
   },
 
@@ -97,22 +161,25 @@ const AccountController = {
         default:
           return res.status(400).send("unable to login");
       }
-    } catch(error) {
-      return res.status(400).send(error)
+    } catch (error) {
+      return res.status(400).send(error);
     }
   },
 
   async delete(req, res) {
     try {
-      const result = await AccountModel.delete(req);
-      if(result.rowCount === 0) {
-        return res.status(404).send({'message': 'account not found'});
+      const result = models.Account.destroy({
+        where: { id: req.accountId }
+      });
+      if (result.rowCount === 0) {
+        return res.status(404).send({ message: "account not found" });
       }
-      return res.status(204).send({ 'message': 'deleted' });
-    } catch(error) {
+      return res.status(204).send({ message: "deleted" });
+    } catch (error) {
+      console.log(error);
       return res.status(400).send(error);
     }
   }
-}
+};
 
 export default AccountController;

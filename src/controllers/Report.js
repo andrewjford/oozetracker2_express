@@ -10,11 +10,12 @@ const Report = {
     const queryString = `
       SELECT SUM(e.amount), c.id, c.name
       FROM expenses e 
-      LEFT JOIN categories c ON e.category = c.id
+      LEFT JOIN categories c ON e.category_id = c.id
       WHERE e.date >= $1 AND
         e.date < $2 AND
         e.account_id = $3
-      GROUP BY c.id`;
+      GROUP BY c.id
+      ORDER BY c.name`;
 
     const values = [
       `${requestedMonth.getFullYear()}-${requestedMonth.getMonth()+1}-01`,
