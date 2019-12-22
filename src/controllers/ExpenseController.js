@@ -4,10 +4,31 @@ import moment from "moment";
 import ExpenseModel from "../models/ExpenseModel";
 import models from "../models/models";
 import ExpenseValidator from "../validators/ExpenseValidator";
-import Sequelize from 'sequelize';
+import Sequelize from "sequelize";
 
 const ExpenseController = {
+  isValidFormat(req, expectedBodyFormat) {
+    Object.keys(expectedBodyFormat).forEach(key => {
+      return typeof req[key] === expectedBodyFormat[key];
+    });
+  },
+
   async create(req, res) {
+    const expectedBodyFormat = {
+      category: "number",
+      date: "string",
+      amount: "string",
+      description: "string"
+    };
+
+    Object.keys(expectedBodyFormat).forEach(key => {
+      if (typeof req[key] !== expectedBodyFormat[key]) {
+        return res.status(400).send({
+          message: `Invalid request format: ${key} must be of type ${expectedBodyFormat[key]}`
+        });
+      }
+    });
+
     const category = await models.Category.findOne({
       where: {
         id: req.body.category,
@@ -24,7 +45,7 @@ const ExpenseController = {
       recordDate.setFullYear(splitDate[0]);
       recordDate.setMonth(splitDate[1] - 1);
       recordDate.setDate(splitDate[2]);
-      
+
       const newExpense = await models.Expense.create({
         id: uuidv4(),
         amount: req.body.amount,
@@ -34,7 +55,7 @@ const ExpenseController = {
         account_id: req.accountId
       });
 
-      newExpense.setDataValue('name', category.name);
+      newExpense.setDataValue("name", category.name);
       return res.status(201).send(newExpense);
     } catch (error) {
       console.log(error);
@@ -46,12 +67,12 @@ const ExpenseController = {
     try {
       const validationErrors = ExpenseValidator.onSearch(req);
       if (validationErrors.length > 0) {
-        return res.status(400).send({message: validationErrors});
+        return res.status(400).send({ message: validationErrors });
       }
 
       const whereObject = {
         account_id: req.accountId
-      }
+      };
 
       if (req.query.categoryId) {
         whereObject.category_id = req.query.categoryId;
@@ -60,7 +81,7 @@ const ExpenseController = {
       if (req.query.startDate) {
         whereObject.date = {
           [Sequelize.Op.between]: [req.query.startDate, req.query.endDate]
-        }
+        };
       }
 
       let limit;
@@ -83,16 +104,16 @@ const ExpenseController = {
 
       const expenses = await models.Expense.findAll({
         attributes: columns,
-        include: [{ model: models.Category, attributes: ['name'] }],
+        include: [{ model: models.Category, attributes: ["name"] }],
         where: whereObject,
-        order: [["date","DESC"]],
+        order: [["date", "DESC"]],
         limit,
-        ...(req.query.offset ? {offset: req.query.offset} : {}),
+        ...(req.query.offset ? { offset: req.query.offset } : {})
       });
 
       return res.status(200).send({ expenses, rowCount: expenses.length });
     } catch (error) {
-      return res.status(400).send({message: [error.toString()]});
+      return res.status(400).send({ message: [error.toString()] });
     }
   },
 
@@ -103,14 +124,14 @@ const ExpenseController = {
           id: req.params.id,
           account_id: req.accountId
         },
-        include: [{ model: models.Category, attributes: ['name'] }]
+        include: [{ model: models.Category, attributes: ["name"] }]
       });
 
       if (!expense) {
         return res.status(404).send({ message: "expense not found" });
       }
 
-      expense.setDataValue('name', expense.category.name);
+      expense.setDataValue("name", expense.category.name);
       return res.status(200).send(expense);
     } catch (error) {
       return res.status(400).send(error);
@@ -149,7 +170,6 @@ const ExpenseController = {
       }
 
       return ExpenseController.getOne(req, res);
-
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);

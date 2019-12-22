@@ -11,3 +11,4 @@
 - rate limit the verification endpoint
 - dos prevention module
 - sanitize input
+- front end send 'choose one' as integer to backend and backend did not sanitize prior to insert/update
