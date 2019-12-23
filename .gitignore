@@ -4,6 +4,8 @@
 # misc
 .env
 *.dump*
+ecosystem.*
+dist/*
 
 npm-debug.log*
 yarn-debug.log*
