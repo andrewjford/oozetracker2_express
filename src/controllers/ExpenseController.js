@@ -14,21 +14,6 @@ const ExpenseController = {
   },
 
   async create(req, res) {
-    const expectedBodyFormat = {
-      category: "number",
-      date: "string",
-      amount: "string",
-      description: "string"
-    };
-
-    Object.keys(expectedBodyFormat).forEach(key => {
-      if (typeof req[key] !== expectedBodyFormat[key]) {
-        return res.status(400).send({
-          message: `Invalid request format: ${key} must be of type ${expectedBodyFormat[key]}`
-        });
-      }
-    });
-
     const category = await models.Category.findOne({
       where: {
         id: req.body.category,
