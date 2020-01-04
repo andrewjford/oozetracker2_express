@@ -1,4 +1,3 @@
-- reactivate sendgrid
 - reset password feature
 - email verification (deprioritized)
   - send email
