@@ -1,3 +1,5 @@
+- set username rather than always email
+- change to json body parser?
 - reset password feature
 - email verification (deprioritized)
   - activate account

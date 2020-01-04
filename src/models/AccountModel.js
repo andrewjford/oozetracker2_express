@@ -1,15 +1,15 @@
-import db from '../services/dbService';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import db from "../services/dbService";
+import bcrypt from "bcryptjs";
+import JwtToken from "../services/JwtToken";
 
 const AccountModel = {
   async getOne(req) {
-    const text = 'SELECT * FROM accounts WHERE id = $1';
+    const text = "SELECT * FROM accounts WHERE id = $1";
     return db.query(text, [req.params.id]);
   },
 
   async getByEmail(email) {
-    const queryText = 'SELECT * FROM accounts WHERE email = $1';
+    const queryText = "SELECT * FROM accounts WHERE email = $1";
     return db.query(queryText, [email]);
   },
 
@@ -18,19 +18,26 @@ const AccountModel = {
     const user = rows[0];
     if (!user) {
       return {
-        status: "Not Found", message: "Account not found for provided email"};
+        status: "Not Found",
+        message: "Account not found for provided email"
+      };
     }
 
-    const passwordIsCorrect = bcrypt.compareSync(req.body.password, user.password);
+    const passwordIsCorrect = bcrypt.compareSync(
+      req.body.password,
+      user.password
+    );
     if (!passwordIsCorrect) {
-      return {status: "Unauthorized", message: "Password not valid"};
+      return { status: "Unauthorized", message: "Password not valid" };
     }
 
-    const tokenExpiration = req.header("Client-Type") === "mobile" ? 24*60*60*30 : 24*60*60;
-    const token = jwt.sign({id: user.id}, process.env.SECRET_KEY, {expiresIn: tokenExpiration});
+    const jwtToken = new JwtToken();
+    const tokenExpiration = jwtToken.requestToTokenExpiration(req);
+    const token = jwtToken.generate(user.id, tokenExpiration);
+
     return {
       status: "Success",
-      user: {id: user.id},
+      user: { id: user.id },
       token,
       tokenExpiration
     };
@@ -48,6 +55,6 @@ const AccountModel = {
       console.log(rows[0]);
     }
   }
-}
+};
 
 export default AccountModel;
