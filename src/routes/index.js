@@ -6,7 +6,8 @@ import AccountController from "../controllers/AccountController";
 import authMiddleware from "../services/authMiddleware";
 import {
   apiRegisterLimiter,
-  apiLoginLimiter
+  apiLoginLimiter,
+  fiveAttemptsLimiter
 } from "../services/rateLimitMiddleware";
 import VerificationTokenController from "../controllers/VerificationTokenController";
 import requestValidation from "../services/requestValidation";
@@ -19,7 +20,11 @@ router.get("/api/v1/ping", apiLoginLimiter, (req, res) => {
 
 router.post("/api/v1/register", apiRegisterLimiter, AccountController.create);
 router.post("/api/v1/login", apiLoginLimiter, AccountController.login);
-router.get("/api/v1/verification", AccountController.validateAccount);
+router.get(
+  "/api/v1/verification",
+  fiveAttemptsLimiter,
+  AccountController.validateAccount
+);
 
 router.get(
   "/api/v1/account",
