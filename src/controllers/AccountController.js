@@ -26,7 +26,8 @@ const AccountController = {
         models.VerificationToken.destroy({
           where: { account_id: rows[0].id }
         });
-        return res.status(200).send({ message: "email successfully verified" });
+
+        return res.sendFile(path.join(__dirname, "../html", "verified.html"));
       } catch (error) {
         console.log("error updating account... " + error);
         return res.status(500).send({ message: "internal server error" });
@@ -46,7 +47,7 @@ const AccountController = {
     return res.status(200).send({
       name: user.name,
       email: user.email,
-      id: user.id,
+      id: user.id
     });
   },
 
@@ -109,7 +110,7 @@ const AccountController = {
   async update(req, res) {
     const errors = AccountValidator.onUpdate(req);
     if (errors.length > 0) {
-      console.log(errors)
+      console.log(errors);
       return res.status(422).send({ message: errors });
     }
 
