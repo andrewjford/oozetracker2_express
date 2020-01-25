@@ -1,4 +1,5 @@
 - set username rather than always email
+- encrypt columns on expense table
 - change to json body parser?
 - reset password feature
 - email verification (deprioritized)
