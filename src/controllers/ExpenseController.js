@@ -40,7 +40,6 @@ const ExpenseController = {
         account_id: req.accountId
       });
 
-      // newExpense.setDataValue("name", category.name);
       return res.status(201).send(newExpense);
     } catch (error) {
       console.log(error);
