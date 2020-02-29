@@ -1,6 +1,6 @@
-import moment from 'moment';
-import uuidv4 from 'uuid/v4';
-import db from '../services/dbService';
+import moment from "moment";
+import uuidv4 from "uuid/v4";
+import db from "../services/dbService";
 
 const ExpenseModel = {
   async create(req) {
@@ -13,7 +13,7 @@ const ExpenseModel = {
     INNER JOIN categories c ON inserted.category_id = c.id`;
 
     const recordDate = new Date();
-    const splitDate = req.body.date.split('-').map(each => parseInt(each));
+    const splitDate = req.body.date.split("-").map(each => parseInt(each));
     recordDate.setFullYear(splitDate[0]);
     recordDate.setMonth(splitDate[1] - 1);
     recordDate.setDate(splitDate[2]);
@@ -24,7 +24,7 @@ const ExpenseModel = {
       moment(recordDate),
       req.body.description,
       req.body.category,
-      req.accountId,
+      req.accountId
     ];
 
     const { rows } = await db.query(text, values);
@@ -32,7 +32,7 @@ const ExpenseModel = {
   },
 
   getAll(req) {
-    const findAllQuery = 'SELECT * FROM expenses WHERE account_id = $1';
+    const findAllQuery = "SELECT * FROM expenses WHERE account_id = $1";
     return db.query(findAllQuery, [req.accountId]);
   },
 
@@ -66,8 +66,14 @@ const ExpenseModel = {
   },
 
   delete(req) {
-    const deleteQuery = 'DELETE FROM expenses WHERE id = $1 AND account_id = $2 RETURNING *';
+    const deleteQuery =
+      "DELETE FROM expenses WHERE id = $1 AND account_id = $2 RETURNING *";
     return db.query(deleteQuery, [req.params.id, req.accountId]);
+  },
+
+  deleteMany(ids, accountId) {
+    const query = `DELETE FROM expenses WHERE id IN ($1) AND account_id = $2 RETURNING *`;
+    return db.query(query, [ids.join(), accountId]);
   },
 
   getRecentExpenses(req) {
@@ -78,6 +84,6 @@ const ExpenseModel = {
       ORDER BY e.date DESC, e.created_at DESC LIMIT 10`;
     return db.query(getQuery, [req.accountId]);
   }
-}
+};
 
 export default ExpenseModel;
