@@ -26,15 +26,9 @@ beforeAll(async done => {
     });
   categoryId = createCategory.body.id;
 
-  const existingExpenses = await ExpenseModel.getAll({
-    accountId
-  });
-
-  const existingIds = existingExpenses.rows.map(expense => expense.id);
-
   await models.Expense.destroy({
     where: {
-      id: existingIds
+      account_id: accountId
     }
   });
 

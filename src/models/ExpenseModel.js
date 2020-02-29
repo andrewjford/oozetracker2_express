@@ -71,11 +71,6 @@ const ExpenseModel = {
     return db.query(deleteQuery, [req.params.id, req.accountId]);
   },
 
-  deleteMany(ids, accountId) {
-    const query = `DELETE FROM expenses WHERE id IN ($1) AND account_id = $2 RETURNING *`;
-    return db.query(query, [ids.join(), accountId]);
-  },
-
   getRecentExpenses(req) {
     const getQuery = `
       SELECT e.*, c.name FROM expenses e 
