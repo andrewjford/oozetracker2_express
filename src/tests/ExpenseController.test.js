@@ -1,7 +1,6 @@
 import moment from "moment";
 import app from "../app";
 import request from "supertest";
-import ExpenseModel from "../models/ExpenseModel";
 import models from "../models/models";
 
 let token;
