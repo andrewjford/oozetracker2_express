@@ -5,19 +5,18 @@ import ExpenseModel from "../models/ExpenseModel";
 import models from "../models/models";
 
 let token;
-let user;
 let categoryId;
 
 beforeAll(async done => {
-  const login = await request(app)
+  const loginResult = await request(app)
     .post("/api/v1/login")
     .send({
       email: "test@test.test",
       password: "test"
     });
-  token = login.body.token;
+  token = loginResult.body.token;
 
-  const accountId = login.body.user.id;
+  const accountId = loginResult.body.user.id;
 
   const createCategory = await request(app)
     .post("/api/v1/categories")
@@ -51,8 +50,6 @@ afterEach(async done => {
     });
   token = login.body.token;
 
-  console.log(login.body);
-
   const accountId = login.body.user.id;
   await models.Expense.destroy({
     where: {
@@ -64,7 +61,7 @@ afterEach(async done => {
 });
 
 afterAll(async done => {
-  const result = await request(app)
+  await request(app)
     .delete(`/api/v1/categories/${categoryId}`)
     .set("Authorization", `Bearer ${token}`);
   done();
@@ -95,9 +92,6 @@ describe("Expense Create validation", () => {
 });
 
 describe("insert, update and delete expenses", () => {
-  let expenseId;
-  const UPDATED_DESCRIPTION = "something else";
-
   it("creates expenses", async () => {
     const requestBody = {
       amount: 200.01,
@@ -116,6 +110,8 @@ describe("insert, update and delete expenses", () => {
   });
 
   it("updates expenses", async () => {
+    const UPDATED_DESCRIPTION = "something else";
+
     const requestBody = {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
