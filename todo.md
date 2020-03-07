@@ -2,6 +2,8 @@
   - get app running docker locally
   - deploy as second app
     - pm2 down existing app
+    - get running without pm2 first
+    - may need to adjust prod env since db is not in docker container
 - set username rather than always email
 - encrypt columns on expense table
 - change to json body parser?
