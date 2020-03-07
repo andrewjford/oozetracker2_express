@@ -1,3 +1,7 @@
+- dockerize
+  - get app running docker locally
+  - deploy as second app
+    - pm2 down existing app
 - set username rather than always email
 - encrypt columns on expense table
 - change to json body parser?
