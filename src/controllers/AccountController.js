@@ -59,15 +59,19 @@ const AccountController = {
 
     try {
       const password = await bcrypt.hash(req.body.password, 10);
+
       const account = await models.Account.create({
         name: req.body.name,
         email: req.body.email.toLowerCase(),
+        username: req.body.username || req.body.email.toLowerCase(),
         password
       }).catch(error => {
         if (error.parent.code === "23505") {
-          return res
-            .status(422)
-            .send({ message: ["A user already exists for this email."] });
+          const errorField = error.errors[0].path;
+
+          return res.status(422).send({
+            message: [`A user already exists for this ${errorField}.`]
+          });
         } else {
           throw Error(error);
         }
