@@ -60,20 +60,27 @@ const AccountController = {
     try {
       const password = await bcrypt.hash(req.body.password, 10);
 
-      const account = await models.Account.create({
-        name: req.body.name,
+      const newAccount = {
         email: req.body.email.toLowerCase(),
         username: req.body.username || req.body.email.toLowerCase(),
         password
-      }).catch(error => {
+      };
+
+      if (req.body.name) {
+        newAccount.name = req.body.name;
+      }
+
+      const account = await models.Account.create(newAccount).catch(error => {
         if (error.parent.code === "23505") {
           const errorField = error.errors[0].path;
 
-          return res.status(422).send({
-            message: [`A user already exists for this ${errorField}.`]
-          });
+          const accountError = new Error();
+          accountError.detail = `A user already exists for this ${errorField}.`;
+          accountError.resCode = 422;
+
+          throw accountError;
         } else {
-          throw Error(error);
+          throw new Error(error);
         }
       });
 
@@ -107,6 +114,11 @@ const AccountController = {
         tokenExpiration
       });
     } catch (error) {
+      if (error.resCode) {
+        const { resCode, detail } = error;
+        return res.status(resCode).send({ message: [detail] });
+      }
+
       return res.status(400).send({ message: ["error creating user"] });
     }
   },

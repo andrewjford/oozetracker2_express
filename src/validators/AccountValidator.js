@@ -7,7 +7,7 @@ const passwordRegex = new RegExp("^[A-Za-zd!@#$%^&*()_+-=].{7,}$");
 const AccountValidator = {
   onCreate(req) {
     const errors = [];
-    if (!req.body.name || !req.body.email || !req.body.password) {
+    if (!req.body.email || !req.body.password) {
       errors.push("Missing required param(s)");
     }
     if (!EmailValidator.validate(req.body.email)) {
@@ -38,7 +38,7 @@ const AccountValidator = {
     if (req.body.newPassword !== req.body.confirmPassword) {
       errors.push("new password and confirmed new password must be the same");
     }
-    
+
     return errors;
   }
 };
