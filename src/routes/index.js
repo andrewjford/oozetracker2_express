@@ -110,5 +110,10 @@ router.post(
   authMiddleware.validateToken,
   Report.getMonthly
 );
+router.get(
+  "/api/v1/reports/expenseSuggestions",
+  authMiddleware.validateToken,
+  Report.getExpenseSuggestions
+);
 
 export default router;
