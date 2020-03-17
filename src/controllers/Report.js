@@ -58,10 +58,14 @@ const Report = {
       descriptionToExpense
     ).reduce((accum, expenses) => {
       const categoryIdToExpenses = groupBy(expenses, "category_id");
+      const expenseWithMostCommonCategory =
+        categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)][0];
 
-      accum.push(categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)][0]);
-      return accum;
-    }, []);
+      return {
+        ...accum,
+        [expenseWithMostCommonCategory.description]: expenseWithMostCommonCategory
+      };
+    }, {});
 
     // const descriptionToExpense = expenses.reduce((accum, expense) => {
     //   const existingExpense = accum[expense.description];
@@ -109,18 +113,18 @@ const Report = {
     //   return expense;
     // })
 
-    const topExpenseDescriptionsByCategory = groupBy(expenses, "category_id");
+    const categoryToDescription = groupBy(expenses, "category_id");
 
-    Object.keys(topExpenseDescriptionsByCategory).forEach(categoryId => {
-      topExpenseDescriptionsByCategory[categoryId] = dedupeArrayOfObjects(
-        topExpenseDescriptionsByCategory[categoryId],
+    Object.keys(categoryToDescription).forEach(categoryId => {
+      categoryToDescription[categoryId] = dedupeArrayOfObjects(
+        categoryToDescription[categoryId],
         "description"
       );
     });
 
     return res.status(200).send({
-      topDescriptionsWithTopCategory,
-      topExpenseDescriptionsByCategory
+      topDescriptions: topDescriptionsWithTopCategory,
+      categoryToDescription
     });
   }
 };
