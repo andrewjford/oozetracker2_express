@@ -116,4 +116,12 @@ router.get(
   ExpenseController.getExpenseSuggestions
 );
 
+router.get("/api/v1/ping2", apiLoginLimiter, (req, res) => {
+  return res.status(200).send({ message: "pong2!" });
+});
+
+router.get("/api/v1/ping3", authMiddleware.validateToken, (req, res) => {
+  return res.status(200).send({ message: "pong3!" });
+});
+
 export default router;
