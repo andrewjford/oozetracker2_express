@@ -1,6 +1,12 @@
 import moment from "moment";
 import uuidv4 from "uuid/v4";
 import db from "../services/dbService";
+import models from "../models/models";
+import {
+  dedupeArrayOfObjects,
+  groupBy,
+  mostCommonKey
+} from "../services/helperMethods";
 
 const ExpenseModel = {
   async create(req) {
@@ -78,7 +84,63 @@ const ExpenseModel = {
       WHERE e.account_id = $1
       ORDER BY e.date DESC, e.created_at DESC LIMIT 10`;
     return db.query(getQuery, [req.accountId]);
+  },
+
+  async getExpenseSuggestions(accountId) {
+    const whereObject = {
+      account_id: accountId
+    };
+
+    const columns = ["description", "category_id"];
+
+    const expenses = await models.Expense.findAll({
+      attributes: columns,
+      include: [{ model: models.Category, attributes: ["name"] }],
+      where: whereObject,
+      order: [["date", "DESC"]],
+      limit: 100
+    });
+
+    const topDescriptions = mapDescriptionsToTopCategory(expenses);
+
+    const categoryToDescription = mapCategoryIdToDescriptions(expenses);
+
+    return {
+      topDescriptions,
+      categoryToDescription
+    };
   }
 };
+
+function mapDescriptionsToTopCategory(expenses) {
+  const descriptionToExpenses = groupBy(expenses, "description");
+
+  return Object.values(descriptionToExpenses).reduce((accum, expenses) => {
+    const categoryIdToExpenses = groupBy(expenses, "category_id");
+    const expenseWithMostCommonCategory =
+      categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)][0];
+
+    return {
+      ...accum,
+      [expenseWithMostCommonCategory.description]: expenseWithMostCommonCategory
+    };
+  }, {});
+}
+
+function mapCategoryIdToDescriptions(expenses) {
+  const categoryToDescriptions = groupBy(expenses, "category_id");
+
+  Object.keys(categoryToDescriptions).forEach(categoryId => {
+    categoryToDescriptions[categoryId] = Array.from(
+      new Set(
+        categoryToDescriptions[categoryId].map(expenseObject => {
+          return expenseObject.description;
+        })
+      )
+    );
+  });
+
+  return categoryToDescriptions;
+}
 
 export default ExpenseModel;

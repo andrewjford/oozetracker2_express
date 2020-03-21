@@ -59,36 +59,3 @@ afterAll(async done => {
     .set("Authorization", `Bearer ${token}`);
   done();
 });
-
-describe("getSuggestions", () => {
-  it("gets expenses", async () => {
-    const requestBody = {
-      amount: 200.01,
-      date: moment(new Date("2019-01-01")),
-      description: "test description",
-      category: categoryId
-    };
-    await request(app)
-      .post("/api/v1/expenses")
-      .set("Authorization", `Bearer ${token}`)
-      .send(requestBody);
-
-    let requestBody2 = {
-      amount: 199.99,
-      date: moment(new Date("2019-01-01")),
-      description: "test description",
-      category: categoryId
-    };
-    await request(app)
-      .post("/api/v1/expenses")
-      .set("Authorization", `Bearer ${token}`)
-      .send(requestBody2);
-
-    const result = await request(app)
-      .get("/api/v1/reports/expenseSuggestions")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(result.statusCode).toEqual(200);
-    expect(result.body).toEqual(1);
-  });
-});

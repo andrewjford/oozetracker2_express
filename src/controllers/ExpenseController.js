@@ -179,6 +179,18 @@ const ExpenseController = {
     } catch (error) {
       return res.status(400).send(error);
     }
+  },
+
+  async getExpenseSuggestions(req, res) {
+    try {
+      const suggestions = await ExpenseModel.getExpenseSuggestions(
+        req.accountId
+      );
+      return res.status(200).send(suggestions);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send(error);
+    }
   }
 };
 

@@ -113,7 +113,7 @@ router.post(
 router.get(
   "/api/v1/reports/expenseSuggestions",
   authMiddleware.validateToken,
-  Report.getExpenseSuggestions
+  ExpenseController.getExpenseSuggestions
 );
 
 export default router;
