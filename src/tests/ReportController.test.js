@@ -59,3 +59,42 @@ afterAll(async done => {
     .set("Authorization", `Bearer ${token}`);
   done();
 });
+
+describe("getMonthly", () => {
+  it("gets monthly data", async () => {
+    const requestBody = {
+      amount: 200.01,
+      date: moment(new Date("2019-01-01")),
+      description: "test description",
+      category: categoryId
+    };
+    await request(app)
+      .post("/api/v1/expenses")
+      .set("Authorization", `Bearer ${token}`)
+      .send(requestBody);
+
+    let requestBody2 = {
+      amount: 199.99,
+      date: moment(new Date("2019-01-01")),
+      description: "test description",
+      category: categoryId
+    };
+    await request(app)
+      .post("/api/v1/expenses")
+      .set("Authorization", `Bearer ${token}`)
+      .send(requestBody2);
+
+    const requestBodyMonthly = {
+      year: 2019,
+      month: 0
+    };
+
+    const result = await request(app)
+      .post("/api/v1/reports/monthly")
+      .set("Authorization", `Bearer ${token}`)
+      .send(requestBodyMonthly);
+
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.rowCount).toEqual(1);
+  });
+});
