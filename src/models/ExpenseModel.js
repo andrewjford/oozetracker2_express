@@ -129,7 +129,7 @@ function mapDescriptionsToTopCategory(expenses) {
       description: expensesOfTopCategory[0].description,
       category_id: expensesOfTopCategory[0].category_id,
       category: expensesOfTopCategory[0].category,
-      recurrence: expensesOfTopCategory.length
+      recurrence: expenses.length
     };
 
     return {
