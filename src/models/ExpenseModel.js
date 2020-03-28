@@ -93,22 +93,26 @@ const ExpenseModel = {
 
     const columns = ["description", "category_id"];
 
-    const expenses = await models.Expense.findAll({
-      attributes: columns,
-      include: [{ model: models.Category, attributes: ["name"] }],
-      where: whereObject,
-      order: [["date", "DESC"]],
-      limit: 100
-    });
+    try {
+      const expenses = await models.Expense.findAll({
+        attributes: columns,
+        include: [{ model: models.Category, attributes: ["name"] }],
+        where: whereObject,
+        order: [["date", "DESC"]],
+        limit: 100
+      });
 
-    const topDescriptions = mapDescriptionsToTopCategory(expenses);
+      const topDescriptions = mapDescriptionsToTopCategory(expenses);
 
-    const categoryToDescription = mapCategoryIdToDescriptions(expenses);
+      const categoryToDescription = mapCategoryIdToDescriptions(expenses);
 
-    return {
-      topDescriptions,
-      categoryToDescription
-    };
+      return {
+        topDescriptions,
+        categoryToDescription
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 };
 
@@ -117,12 +121,20 @@ function mapDescriptionsToTopCategory(expenses) {
 
   return Object.values(descriptionToExpenses).reduce((accum, expenses) => {
     const categoryIdToExpenses = groupBy(expenses, "category_id");
-    const expenseWithMostCommonCategory =
-      categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)][0];
+
+    const expensesOfTopCategory =
+      categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)];
+
+    const expense = {
+      description: expensesOfTopCategory[0].description,
+      category_id: expensesOfTopCategory[0].category_id,
+      category: expensesOfTopCategory[0].category,
+      recurrence: expensesOfTopCategory.length
+    };
 
     return {
       ...accum,
-      [expenseWithMostCommonCategory.description]: expenseWithMostCommonCategory
+      [expense.description]: expense
     };
   }, {});
 }
