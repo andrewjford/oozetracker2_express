@@ -1,9 +1,5 @@
-- dockerize
-  - get app running docker locally
-  - deploy as second app
-    - pm2 down existing app
-    - get running without pm2 first
-    - may need to adjust prod env since db is not in docker container
+- suggestions
+  - renaming and such
 - set username rather than always email
 - encrypt columns on expense table
 - change to json body parser?
@@ -14,6 +10,11 @@
     - activate after email verification success
   - delete verification code after x days
   - allow regenerate/resend of verification or delete user after xy days
-- dos prevention module
 - sanitize input
 - front end send 'choose one' as integer to backend and backend did not sanitize prior to insert/update
+- dockerize
+  - get app running docker locally
+  - deploy as second app
+    - pm2 down existing app
+    - get running without pm2 first
+    - may need to adjust prod env since db is not in docker container
