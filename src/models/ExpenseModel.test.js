@@ -62,6 +62,32 @@ afterAll(async done => {
   done();
 });
 
+describe("getRecentExpenses", () => {
+  expect.assertions(4);
+
+  it("gets recent expenses by account Id", async () => {
+    const expense = {
+      amount: 200.01,
+      date: moment(new Date("2019-01-01")),
+      description: "test description",
+      category: categoryId
+    };
+    await request(app)
+      .post("/api/v1/expenses")
+      .set("Authorization", `Bearer ${token}`)
+      .send(expense);
+
+    const result = await ExpenseModel.getRecentExpenses({
+      accountId
+    });
+
+    expect(result).not.toEqual(null);
+    expect(result.rows.length).toEqual(1);
+    expect(result.rows[0].description).toEqual(expense.description);
+    expect(result.rows[0].amount).toEqual(expense.amount);
+  });
+});
+
 describe("getExpenseSuggestions", () => {
   it("gets expenses", async () => {
     const requestBody = {

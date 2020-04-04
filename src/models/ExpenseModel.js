@@ -2,11 +2,7 @@ import moment from "moment";
 import uuidv4 from "uuid/v4";
 import db from "../services/dbService";
 import models from "../models/models";
-import {
-  dedupeArrayOfObjects,
-  groupBy,
-  mostCommonKey
-} from "../services/helperMethods";
+import { groupBy, mostCommonKey } from "../services/helperMethods";
 
 const ExpenseModel = {
   async create(req) {
