@@ -1,4 +1,5 @@
 - full coverage tests
+- return value of getRecentExpenses expense amount is string??
 - suggestions
   - renaming and such
 - set username rather than always email

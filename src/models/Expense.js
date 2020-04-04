@@ -19,6 +19,7 @@ const expense = (sequelize, DataTypes) => {
     },
     {
       underscored: true,
+      logging: false,
       sequelize,
       modelName: "expense"
     }

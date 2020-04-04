@@ -63,9 +63,9 @@ afterAll(async done => {
 });
 
 describe("getRecentExpenses", () => {
-  expect.assertions(4);
-
   it("gets recent expenses by account Id", async () => {
+    expect.assertions(4);
+
     const expense = {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
@@ -84,7 +84,27 @@ describe("getRecentExpenses", () => {
     expect(result).not.toEqual(null);
     expect(result.rows.length).toEqual(1);
     expect(result.rows[0].description).toEqual(expense.description);
-    expect(result.rows[0].amount).toEqual(expense.amount);
+    expect(result.rows[0].category).toEqual(expense.categoryId);
+  });
+
+  it("returns an empty list with no accountId", async () => {
+    expect.assertions(2);
+
+    const expense = {
+      amount: 200.01,
+      date: moment(new Date("2019-01-01")),
+      description: "test description",
+      category: categoryId
+    };
+    await request(app)
+      .post("/api/v1/expenses")
+      .set("Authorization", `Bearer ${token}`)
+      .send(expense);
+
+    const result = await ExpenseModel.getRecentExpenses({});
+
+    expect(result).not.toEqual(null);
+    expect(result.rows.length).toEqual(0);
   });
 });
 
