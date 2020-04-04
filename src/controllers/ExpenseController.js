@@ -73,30 +73,13 @@ const ExpenseController = {
   },
 
   async update(req, res) {
-    const updateableColumns = {
-      amount: req.body.amount,
-      date: req.body.date,
-      description: req.body.description,
-      category_id: req.body.category
-    };
-
-    const columnsToUpdate = Object.keys(updateableColumns).reduce(
-      (accum, key) => {
-        if (updateableColumns[key]) {
-          accum[key] = updateableColumns[key];
-          return accum;
-        }
-        return accum;
-      },
-      {}
-    );
-
     try {
-      const [numberOfAffectedRows] = await models.Expense.update(
-        columnsToUpdate,
+      const [numberOfAffectedRows] = await ExpenseModel.update(
         {
-          where: { id: req.params.id }
-        }
+          ...req.body,
+          id: req.params.id
+        },
+        req.accountId
       );
 
       if (numberOfAffectedRows === 0) {
@@ -112,10 +95,17 @@ const ExpenseController = {
 
   async delete(req, res) {
     try {
-      const { rows } = await ExpenseModel.delete(req);
-      if (!rows[0]) {
+      const destroyedCount = await models.Expense.destroy({
+        where: {
+          id: req.params.id,
+          account_id: req.accountId
+        }
+      });
+
+      if (destroyedCount === 0) {
         return res.status(404).send({ message: "expense not found" });
       }
+
       return res.status(204).send({ message: "deleted" });
     } catch (error) {
       return res.status(400).send(error);
