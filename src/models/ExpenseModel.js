@@ -3,6 +3,7 @@ import uuidv4 from "uuid/v4";
 import db from "../services/dbService";
 import models from "../models/models";
 import { groupBy, mostCommonKey } from "../services/helperMethods";
+import Sequelize from "sequelize";
 
 const ExpenseModel = {
   async create(requestBody) {
@@ -24,9 +25,47 @@ const ExpenseModel = {
     return newExpense;
   },
 
-  getAll(req) {
-    const findAllQuery = "SELECT * FROM expenses WHERE account_id = $1";
-    return db.query(findAllQuery, [req.accountId]);
+  getAll(query) {
+    const whereObject = {
+      account_id: query.accountId
+    };
+
+    if (query.categoryId) {
+      whereObject.category_id = query.categoryId;
+    }
+
+    if (query.startDate) {
+      whereObject.date = {
+        [Sequelize.Op.between]: [query.startDate, query.endDate]
+      };
+    }
+
+    let limit;
+    if (query.pageSize === "ALL") {
+      limit = null;
+    } else if (query.pageSize) {
+      limit = query.pageSize;
+    } else {
+      limit = 20;
+    }
+
+    const columns = [
+      "amount",
+      "description",
+      "date",
+      "id",
+      "account_id",
+      "category_id"
+    ];
+
+    return models.Expense.findAll({
+      attributes: columns,
+      include: [{ model: models.Category, attributes: ["name"] }],
+      where: whereObject,
+      order: [["date", "DESC"]],
+      limit,
+      ...(query.offset ? { offset: query.offset } : {})
+    });
   },
 
   getOne(req) {

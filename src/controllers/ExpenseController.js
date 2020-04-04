@@ -1,7 +1,6 @@
 import ExpenseModel from "../models/ExpenseModel";
 import models from "../models/models";
 import ExpenseValidator from "../validators/ExpenseValidator";
-import Sequelize from "sequelize";
 
 const ExpenseController = {
   isValidFormat(req, expectedBodyFormat) {
@@ -41,45 +40,9 @@ const ExpenseController = {
         return res.status(400).send({ message: validationErrors });
       }
 
-      const whereObject = {
-        account_id: req.accountId
-      };
-
-      if (req.query.categoryId) {
-        whereObject.category_id = req.query.categoryId;
-      }
-
-      if (req.query.startDate) {
-        whereObject.date = {
-          [Sequelize.Op.between]: [req.query.startDate, req.query.endDate]
-        };
-      }
-
-      let limit;
-      if (req.query.pageSize === "ALL") {
-        limit = null;
-      } else if (req.query.pageSize) {
-        limit = req.query.pageSize;
-      } else {
-        limit = 20;
-      }
-
-      const columns = [
-        "amount",
-        "description",
-        "date",
-        "id",
-        "account_id",
-        "category_id"
-      ];
-
-      const expenses = await models.Expense.findAll({
-        attributes: columns,
-        include: [{ model: models.Category, attributes: ["name"] }],
-        where: whereObject,
-        order: [["date", "DESC"]],
-        limit,
-        ...(req.query.offset ? { offset: req.query.offset } : {})
+      const expenses = await ExpenseModel.getAll({
+        ...req.query,
+        accountId: req.accountId
       });
 
       return res.status(200).send({ expenses, rowCount: expenses.length });
