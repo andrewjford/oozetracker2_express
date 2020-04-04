@@ -1,3 +1,4 @@
+- full coverage tests
 - suggestions
   - renaming and such
 - set username rather than always email
