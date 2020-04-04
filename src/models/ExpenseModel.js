@@ -5,32 +5,23 @@ import models from "../models/models";
 import { groupBy, mostCommonKey } from "../services/helperMethods";
 
 const ExpenseModel = {
-  async create(req) {
-    const text = `WITH inserted AS (INSERT INTO
-      expenses(id, amount, date, description, category_id, account_id)
-      VALUES($1, $2, $3, $4, $5, $6)
-      RETURNING *)
-    SELECT inserted.*, c.name AS name
-    FROM inserted
-    INNER JOIN categories c ON inserted.category_id = c.id`;
-
+  async create(requestBody) {
     const recordDate = new Date();
-    const splitDate = req.body.date.split("-").map(each => parseInt(each));
+    const splitDate = requestBody.date.split("-").map(each => parseInt(each));
     recordDate.setFullYear(splitDate[0]);
     recordDate.setMonth(splitDate[1] - 1);
     recordDate.setDate(splitDate[2]);
 
-    const values = [
-      uuidv4(),
-      req.body.amount,
-      moment(recordDate),
-      req.body.description,
-      req.body.category,
-      req.accountId
-    ];
+    const newExpense = await models.Expense.create({
+      id: uuidv4(),
+      amount: requestBody.amount,
+      date: moment(recordDate),
+      description: requestBody.description,
+      category_id: requestBody.category,
+      account_id: requestBody.accountId
+    });
 
-    const { rows } = await db.query(text, values);
-    return rows;
+    return newExpense;
   },
 
   getAll(req) {

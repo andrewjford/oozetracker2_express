@@ -1,6 +1,3 @@
-import uuidv4 from "uuid/v4";
-import moment from "moment";
-
 import ExpenseModel from "../models/ExpenseModel";
 import models from "../models/models";
 import ExpenseValidator from "../validators/ExpenseValidator";
@@ -25,19 +22,9 @@ const ExpenseController = {
     }
 
     try {
-      const recordDate = new Date();
-      const splitDate = req.body.date.split("-").map(each => parseInt(each));
-      recordDate.setFullYear(splitDate[0]);
-      recordDate.setMonth(splitDate[1] - 1);
-      recordDate.setDate(splitDate[2]);
-
-      const newExpense = await models.Expense.create({
-        id: uuidv4(),
-        amount: req.body.amount,
-        date: moment(recordDate),
-        description: req.body.description,
-        category_id: req.body.category,
-        account_id: req.accountId
+      const newExpense = await ExpenseModel.create({
+        ...req.body,
+        accountId: req.accountId
       });
 
       return res.status(201).send(newExpense);
