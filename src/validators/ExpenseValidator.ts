@@ -8,7 +8,7 @@ const ExpenseValidator = {
       errors.push("A start date and end date must be paired");
     }
     return errors;
-  }
+  },
 };
 
 export default ExpenseValidator;

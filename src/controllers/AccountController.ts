@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mailer from "../services/mailer";
 import CategoryModel from "../models/CategoryModel";
+import path from "path";
 
 const AccountController = {
   async validateAccount(req, res) {
@@ -60,7 +61,7 @@ const AccountController = {
     try {
       const password = await bcrypt.hash(req.body.password, 10);
 
-      const newAccount = {
+      const newAccount: any = {
         email: req.body.email.toLowerCase(),
         username: req.body.username || req.body.email.toLowerCase(),
         password,
@@ -74,7 +75,7 @@ const AccountController = {
         if (error.parent.code === "23505") {
           const errorField = error.errors[0].path;
 
-          const accountError = new Error();
+          const accountError: any = new Error();
           accountError.detail = `A user already exists for this ${errorField}.`;
           accountError.resCode = 422;
 

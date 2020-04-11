@@ -1,7 +1,7 @@
 import db from "../services/dbService";
 import bcrypt from "bcryptjs";
 import JwtToken from "../services/JwtToken";
-import models from "../models/models";
+import models from "./models";
 
 const AccountModel = {
   async getOne(req) {
@@ -49,6 +49,8 @@ const AccountModel = {
       FROM verification_tokens v 
       LEFT JOIN accounts a ON v.account_id = a.id
       WHERE v.token = $1`;
+
+    //@ts-ignore
     const { rows } = await db.query(query, [req.query.token]);
     if (rows && rows.length > 0) {
       // update account
@@ -58,7 +60,7 @@ const AccountModel = {
   },
 
   async update(user, newChanges) {
-    const colsToUpdate = {};
+    const colsToUpdate: any = {};
     if (newChanges.newPassword) {
       const passwordIsCorrect = bcrypt.compareSync(
         newChanges.oldPassword,
@@ -66,7 +68,7 @@ const AccountModel = {
       );
 
       if (!passwordIsCorrect) {
-        const error = new Error("Old password not valid");
+        const error: any = new Error("Old password not valid");
         error.code = 400;
         error.status = "Unauthorized";
 

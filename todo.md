@@ -1,3 +1,5 @@
+- Typescripting
+  - fix sequelize models
 - full coverage tests
   - need to expand upon just existing basic tests
 - return value of getRecentExpenses expense amount is string??

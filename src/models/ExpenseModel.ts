@@ -1,14 +1,14 @@
 import moment from "moment";
 import uuidv4 from "uuid/v4";
 import db from "../services/dbService";
-import models from "../models/models";
+import models from "./models";
 import { groupBy, mostCommonKey } from "../services/helperMethods";
 import Sequelize from "sequelize";
 
 const ExpenseModel = {
   async create(requestBody) {
     const recordDate = new Date();
-    const splitDate = requestBody.date.split("-").map(each => parseInt(each));
+    const splitDate = requestBody.date.split("-").map((each) => parseInt(each));
     recordDate.setFullYear(splitDate[0]);
     recordDate.setMonth(splitDate[1] - 1);
     recordDate.setDate(splitDate[2]);
@@ -19,15 +19,15 @@ const ExpenseModel = {
       date: moment(recordDate),
       description: requestBody.description,
       category_id: requestBody.category,
-      account_id: requestBody.accountId
+      account_id: requestBody.accountId,
     });
 
     return newExpense;
   },
 
   getAll(query) {
-    const whereObject = {
-      account_id: query.accountId
+    const whereObject: any = {
+      account_id: query.accountId,
     };
 
     if (query.categoryId) {
@@ -36,7 +36,7 @@ const ExpenseModel = {
 
     if (query.startDate) {
       whereObject.date = {
-        [Sequelize.Op.between]: [query.startDate, query.endDate]
+        [Sequelize.Op.between]: [query.startDate, query.endDate],
       };
     }
 
@@ -55,7 +55,7 @@ const ExpenseModel = {
       "date",
       "id",
       "account_id",
-      "category_id"
+      "category_id",
     ];
 
     return models.Expense.findAll({
@@ -64,7 +64,7 @@ const ExpenseModel = {
       where: whereObject,
       order: [["date", "DESC"]],
       limit,
-      ...(query.offset ? { offset: query.offset } : {})
+      ...(query.offset ? { offset: query.offset } : {}),
     });
   },
 
@@ -73,7 +73,7 @@ const ExpenseModel = {
       amount: expense.amount,
       date: expense.date,
       description: expense.description,
-      category_id: expense.category
+      category_id: expense.category,
     };
 
     const columnsToUpdate = Object.keys(updateableColumns).reduce(
@@ -90,8 +90,8 @@ const ExpenseModel = {
     return models.Expense.update(columnsToUpdate, {
       where: {
         id: expense.id,
-        account_id: accountId
-      }
+        account_id: accountId,
+      },
     });
   },
 
@@ -106,7 +106,7 @@ const ExpenseModel = {
 
   async getExpenseSuggestions(accountId) {
     const whereObject = {
-      account_id: accountId
+      account_id: accountId,
     };
 
     const columns = ["description", "category_id"];
@@ -117,7 +117,7 @@ const ExpenseModel = {
         include: [{ model: models.Category, attributes: ["name"] }],
         where: whereObject,
         order: [["date", "DESC"]],
-        limit: 100
+        limit: 100,
       });
 
       const topDescriptions = mapDescriptionsToTopCategory(expenses);
@@ -126,44 +126,47 @@ const ExpenseModel = {
 
       return {
         topDescriptions,
-        categoryToDescription
+        categoryToDescription,
       };
     } catch (err) {
       throw err;
     }
-  }
+  },
 };
 
-function mapDescriptionsToTopCategory(expenses) {
-  const descriptionToExpenses = groupBy(expenses, "description");
+function mapDescriptionsToTopCategory(expensesInput: any[]) {
+  const descriptionToExpenses = groupBy(expensesInput, "description");
 
-  return Object.values(descriptionToExpenses).reduce((accum, expenses) => {
-    const categoryIdToExpenses = groupBy(expenses, "category_id");
+  return Object.values(descriptionToExpenses).reduce(
+    (accum: any, expenses: any) => {
+      const categoryIdToExpenses = groupBy(expenses, "category_id");
 
-    const expensesOfTopCategory =
-      categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)];
+      const expensesOfTopCategory =
+        categoryIdToExpenses[mostCommonKey(categoryIdToExpenses)];
 
-    const expense = {
-      description: expensesOfTopCategory[0].description,
-      category_id: expensesOfTopCategory[0].category_id,
-      category: expensesOfTopCategory[0].category,
-      recurrence: expenses.length
-    };
+      const expense = {
+        description: expensesOfTopCategory[0].description,
+        category_id: expensesOfTopCategory[0].category_id,
+        category: expensesOfTopCategory[0].category,
+        recurrence: expenses.length,
+      };
 
-    return {
-      ...accum,
-      [expense.description]: expense
-    };
-  }, {});
+      return {
+        ...accum,
+        [expense.description]: expense,
+      };
+    },
+    {}
+  );
 }
 
 function mapCategoryIdToDescriptions(expenses) {
   const categoryToDescriptions = groupBy(expenses, "category_id");
 
-  Object.keys(categoryToDescriptions).forEach(categoryId => {
+  Object.keys(categoryToDescriptions).forEach((categoryId) => {
     categoryToDescriptions[categoryId] = Array.from(
       new Set(
-        categoryToDescriptions[categoryId].map(expenseObject => {
+        categoryToDescriptions[categoryId].map((expenseObject) => {
           return expenseObject.description;
         })
       )

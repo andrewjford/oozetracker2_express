@@ -8,36 +8,36 @@ const expense = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       amount: {
         type: DataTypes.DECIMAL,
-        allowNull: false
+        allowNull: false,
       },
       description: DataTypes.TEXT,
-      date: DataTypes.DATEONLY
+      date: DataTypes.DATEONLY,
     },
     {
       underscored: true,
-      logging: false,
       sequelize,
-      modelName: "expense"
+      modelName: "expense",
     }
   );
 
-  Expense.associate = models => {
+  //@ts-ignore
+  Expense.associate = (models) => {
     Expense.belongsTo(models.Account, {
       foreignKey: {
         name: "account_id",
-        allowNull: false
+        allowNull: false,
       },
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
 
     Expense.belongsTo(models.Category, {
       foreignKey: {
-        name: "category_id"
-      }
+        name: "category_id",
+      },
     });
   };
 

@@ -8,13 +8,11 @@ let token;
 let categoryId;
 let accountId;
 
-beforeAll(async done => {
-  const loginResult = await request(app)
-    .post("/api/v1/login")
-    .send({
-      email: "test@test.test",
-      password: "test"
-    });
+beforeAll(async (done) => {
+  const loginResult = await request(app).post("/api/v1/login").send({
+    email: "test@test.test",
+    password: "test",
+  });
   token = loginResult.body.token;
 
   accountId = loginResult.body.user.id;
@@ -23,39 +21,37 @@ beforeAll(async done => {
     .post("/api/v1/categories")
     .set("Authorization", `Bearer ${token}`)
     .send({
-      name: "test category"
+      name: "test category",
     });
   categoryId = createCategory.body.id;
 
   await models.Expense.destroy({
     where: {
-      account_id: accountId
-    }
+      account_id: accountId,
+    },
   });
 
   done();
 });
 
-afterEach(async done => {
-  const login = await request(app)
-    .post("/api/v1/login")
-    .send({
-      email: "test@test.test",
-      password: "test"
-    });
+afterEach(async (done) => {
+  const login = await request(app).post("/api/v1/login").send({
+    email: "test@test.test",
+    password: "test",
+  });
   token = login.body.token;
 
   accountId = login.body.user.id;
   await models.Expense.destroy({
     where: {
-      account_id: accountId
-    }
+      account_id: accountId,
+    },
   });
 
   done();
 });
 
-afterAll(async done => {
+afterAll(async (done) => {
   await request(app)
     .delete(`/api/v1/categories/${categoryId}`)
     .set("Authorization", `Bearer ${token}`);
@@ -70,21 +66,21 @@ describe("getRecentExpenses", () => {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: categoryId
+      category: categoryId,
     };
     await request(app)
       .post("/api/v1/expenses")
       .set("Authorization", `Bearer ${token}`)
       .send(expense);
 
-    const result = await ExpenseModel.getRecentExpenses({
-      accountId
+    const result: any = await ExpenseModel.getRecentExpenses({
+      accountId,
     });
 
     expect(result).not.toEqual(null);
     expect(result.rows.length).toEqual(1);
     expect(result.rows[0].description).toEqual(expense.description);
-    expect(result.rows[0].category).toEqual(expense.categoryId);
+    expect(result.rows[0].category_id).toEqual(expense.category);
   });
 
   it("returns an empty list with no accountId", async () => {
@@ -94,14 +90,14 @@ describe("getRecentExpenses", () => {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: categoryId
+      category: categoryId,
     };
     await request(app)
       .post("/api/v1/expenses")
       .set("Authorization", `Bearer ${token}`)
       .send(expense);
 
-    const result = await ExpenseModel.getRecentExpenses({});
+    const result: any = await ExpenseModel.getRecentExpenses({});
 
     expect(result).not.toEqual(null);
     expect(result.rows.length).toEqual(0);
@@ -114,7 +110,7 @@ describe("getExpenseSuggestions", () => {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: categoryId
+      category: categoryId,
     };
     await request(app)
       .post("/api/v1/expenses")
@@ -125,7 +121,7 @@ describe("getExpenseSuggestions", () => {
       amount: 199.99,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: categoryId
+      category: categoryId,
     };
     await request(app)
       .post("/api/v1/expenses")
@@ -136,7 +132,7 @@ describe("getExpenseSuggestions", () => {
 
     expect(Object.keys(result.topDescriptions)).toEqual(["test description"]);
     expect(result.categoryToDescription).toEqual({
-      [categoryId]: ["test description"]
+      [categoryId]: ["test description"],
     });
   });
 });

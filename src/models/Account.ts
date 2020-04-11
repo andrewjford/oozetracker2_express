@@ -8,16 +8,17 @@ const account = (sequelize, DataTypes) => {
       email: DataTypes.TEXT,
       password: DataTypes.TEXT,
       isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
-      username: DataTypes.TEXT
+      username: DataTypes.TEXT,
     },
     {
       underscored: true,
       sequelize,
-      modelName: "account"
+      modelName: "account",
     }
   );
 
-  Account.associations = models => {
+  //@ts-ignore
+  Account.associations = (models) => {
     Account.hasOne(models.VerificationToken);
   };
 

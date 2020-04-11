@@ -1,8 +1,7 @@
-import * as moment from "moment";
+import moment from "moment";
 import app from "../app";
 import request from "supertest";
 import models from "../models/models";
-import expense from "../models/Expense";
 
 let token;
 let categoryId;

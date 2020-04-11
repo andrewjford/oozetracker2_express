@@ -9,4 +9,10 @@ module.exports = {
     "^.+\\.(ts)$": "ts-jest",
   },
   testEnvironment: "node",
+  testPathIgnorePatterns: [
+    "<rootDir>/node_modules/",
+    "<rootDir>/dist/",
+    "<rootDir>/built/",
+    "<rootDir>/build/",
+  ],
 };
