@@ -69,7 +69,7 @@ describe("account creation", () => {
   });
 });
 
-describe("account update", () => {
+describe("account update and get", () => {
   const changedName = "changed name";
 
   it("should update a user name", async () => {
