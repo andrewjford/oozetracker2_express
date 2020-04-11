@@ -1,6 +1,7 @@
 import db from "../services/dbService";
 import bcrypt from "bcryptjs";
 import JwtToken from "../services/JwtToken";
+import models from "../models/models";
 
 const AccountModel = {
   async getOne(req) {
@@ -19,7 +20,7 @@ const AccountModel = {
     if (!user) {
       return {
         status: "Not Found",
-        message: "Account not found for provided email"
+        message: "Account not found for provided email",
       };
     }
 
@@ -39,7 +40,7 @@ const AccountModel = {
       status: "Success",
       user: { id: user.id },
       token,
-      tokenExpiration
+      tokenExpiration,
     };
   },
 
@@ -54,7 +55,37 @@ const AccountModel = {
       // delete verification token
       console.log(rows[0]);
     }
-  }
+  },
+
+  async update(user, newChanges) {
+    const colsToUpdate = {};
+    if (newChanges.newPassword) {
+      const passwordIsCorrect = bcrypt.compareSync(
+        newChanges.oldPassword,
+        user.password
+      );
+
+      if (!passwordIsCorrect) {
+        const error = new Error("Old password not valid");
+        error.code = 400;
+        error.status = "Unauthorized";
+
+        throw error;
+      }
+
+      const password = await bcrypt.hash(newChanges.newPassword, 10);
+
+      colsToUpdate.password = password;
+    }
+
+    if (newChanges.name) {
+      colsToUpdate.name = newChanges.name;
+    }
+
+    return models.Account.update(colsToUpdate, {
+      where: { id: user.id },
+    });
+  },
 };
 
 export default AccountModel;

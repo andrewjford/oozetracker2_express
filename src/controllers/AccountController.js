@@ -24,7 +24,7 @@ const AccountController = {
         );
 
         models.VerificationToken.destroy({
-          where: { account_id: rows[0].id }
+          where: { account_id: rows[0].id },
         });
 
         return res.sendFile(path.join(__dirname, "../html", "verified.html"));
@@ -41,13 +41,13 @@ const AccountController = {
 
   async getOne(req, res) {
     const user = await models.Account.findOne({
-      where: { id: req.accountId }
+      where: { id: req.accountId },
     });
 
     return res.status(200).send({
       name: user.name,
       email: user.email,
-      id: user.id
+      id: user.id,
     });
   },
 
@@ -63,14 +63,14 @@ const AccountController = {
       const newAccount = {
         email: req.body.email.toLowerCase(),
         username: req.body.username || req.body.email.toLowerCase(),
-        password
+        password,
       };
 
       if (req.body.name) {
         newAccount.name = req.body.name;
       }
 
-      const account = await models.Account.create(newAccount).catch(error => {
+      const account = await models.Account.create(newAccount).catch((error) => {
         if (error.parent.code === "23505") {
           const errorField = error.errors[0].path;
 
@@ -91,27 +91,27 @@ const AccountController = {
       );
       mailer
         .sendVerificationMessage(account.email, verificationTokenModel.token)
-        .catch(error => {
+        .catch((error) => {
           console.log(`error sending email: ${error}`);
           return res.status(500).send({ message: "Error sending email." });
         });
 
       CategoryModel.create({
         body: {
-          name: "Groceries"
+          name: "Groceries",
         },
-        accountId: account.id
+        accountId: account.id,
       });
 
       const tokenExpiration = 24 * 60 * 60;
       const token = jwt.sign({ id: account.id }, process.env.SECRET_KEY, {
-        expiresIn: tokenExpiration
+        expiresIn: tokenExpiration,
       });
 
       return res.status(201).send({
         user: account, // prob need to strip this down
         token,
-        tokenExpiration
+        tokenExpiration,
       });
     } catch (error) {
       if (error.resCode) {
@@ -131,37 +131,35 @@ const AccountController = {
     }
 
     const user = await models.Account.findOne({
-      where: { id: req.accountId }
+      where: { id: req.accountId },
     });
     if (!user) {
       return {
         status: "Not Found",
-        message: "Account not found for provided email"
+        message: "Account not found for provided email",
       };
     }
 
-    const passwordIsCorrect = bcrypt.compareSync(
-      req.body.oldPassword,
-      user.password
-    );
-    if (!passwordIsCorrect) {
-      return res
-        .status(400)
-        .send({ status: "Unauthorized", message: "Old password not valid" });
-    }
-
     try {
-      const password = await bcrypt.hash(req.body.newPassword, 10);
-      await models.Account.update(
-        {
-          name: req.body.name,
-          password
-        },
-        { where: { id: req.accountId } }
-      );
-      return res.status(200).send({ message: "successful update" });
+      const updatedUser = await AccountModel.update(user, {
+        name: req.body.name,
+        oldPassword: req.body.oldPassword,
+        newPassword: req.body.newPassword,
+      });
+
+      return res.status(200).send({
+        message: "successful update",
+        record: updatedUser,
+      });
     } catch (error) {
-      throw Error(error);
+      if (error.code == 400) {
+        return res.status(error.code).send({
+          status: error.status,
+          message: error.message,
+        });
+      } else {
+        return res.status(500);
+      }
     }
   },
 
@@ -185,9 +183,10 @@ const AccountController = {
 
   async delete(req, res) {
     try {
-      const result = models.Account.destroy({
-        where: { id: req.accountId }
+      const result = await models.Account.destroy({
+        where: { id: req.accountId },
       });
+
       if (result.rowCount === 0) {
         return res.status(404).send({ message: "account not found" });
       }
@@ -196,7 +195,7 @@ const AccountController = {
       console.log(error);
       return res.status(400).send(error);
     }
-  }
+  },
 };
 
 export default AccountController;
