@@ -1,4 +1,4 @@
-import moment from "moment";
+import * as moment from "moment";
 import app from "../app";
 import request from "supertest";
 import models from "../models/models";
@@ -8,13 +8,11 @@ let token;
 let categoryId;
 let accountId;
 
-beforeAll(async done => {
-  const loginResult = await request(app)
-    .post("/api/v1/login")
-    .send({
-      email: "test@test.test",
-      password: "test"
-    });
+beforeAll(async (done) => {
+  const loginResult = await request(app).post("/api/v1/login").send({
+    email: "test@test.test",
+    password: "test",
+  });
   token = loginResult.body.token;
 
   accountId = loginResult.body.user.id;
@@ -23,30 +21,30 @@ beforeAll(async done => {
     .post("/api/v1/categories")
     .set("Authorization", `Bearer ${token}`)
     .send({
-      name: "test category"
+      name: "test category",
     });
   categoryId = createCategory.body.id;
 
   await models.Expense.destroy({
     where: {
-      account_id: accountId
-    }
+      account_id: accountId,
+    },
   });
 
   done();
 });
 
-afterEach(async done => {
+afterEach(async (done) => {
   await models.Expense.destroy({
     where: {
-      account_id: accountId
-    }
+      account_id: accountId,
+    },
   });
 
   done();
 });
 
-afterAll(async done => {
+afterAll(async (done) => {
   await request(app)
     .delete(`/api/v1/categories/${categoryId}`)
     .set("Authorization", `Bearer ${token}`);
@@ -71,7 +69,7 @@ describe("Expense Create validation", () => {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: 1
+      category: 1,
     };
     const result = await request(app)
       .post("/api/v1/expenses")
@@ -90,7 +88,7 @@ describe("API insert, update and delete expenses", () => {
       amount: 200.01,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: categoryId
+      category: categoryId,
     };
     const result = await request(app)
       .post("/api/v1/expenses")
@@ -117,7 +115,7 @@ describe("API insert, update and delete expenses", () => {
       .send({
         description: UPDATED_DESCRIPTION,
         date: moment(new Date("2019-01-01")),
-        category: categoryId
+        category: categoryId,
       });
 
     expect(result.statusCode).toEqual(200);
@@ -177,7 +175,7 @@ describe("API getSuggestions", () => {
       amount: 199.99,
       date: moment(new Date("2019-01-01")),
       description: "test description",
-      category: categoryId
+      category: categoryId,
     };
     await request(app)
       .post("/api/v1/expenses")
@@ -190,10 +188,10 @@ describe("API getSuggestions", () => {
 
     expect(result.statusCode).toEqual(200);
     expect(Object.keys(result.body.topDescriptions)).toEqual([
-      requestBody2.description
+      requestBody2.description,
     ]);
     expect(result.body.categoryToDescription).toEqual({
-      [categoryId]: [requestBody2.description]
+      [categoryId]: [requestBody2.description],
     });
   });
 });
@@ -219,7 +217,7 @@ async function insertTestExpense() {
     amount: 200.01,
     date: moment(new Date("2019-01-01")),
     description: "test description",
-    category: categoryId
+    category: categoryId,
   };
   return await request(app)
     .post("/api/v1/expenses")

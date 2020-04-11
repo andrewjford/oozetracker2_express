@@ -6,6 +6,7 @@
 *.dump*
 ecosystem.*
 dist/*
+built*
 
 npm-debug.log*
 yarn-debug.log*
