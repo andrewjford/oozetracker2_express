@@ -4,12 +4,11 @@ import request from "supertest";
 let token;
 
 beforeAll(async (done) => {
-  const response = await request(app).post('/api/v1/login')
-    .send({
-      email: "test@test.test",
-      password: "test",
-    });
-  token = response.body.token
+  const response = await request(app).post("/api/v1/login").send({
+    email: "test@test.test",
+    password: "test",
+  });
+  token = response.body.token;
   done();
 });
 
@@ -21,13 +20,29 @@ describe("GET /api/v1/categories", () => {
   });
 });
 
-describe("GET /api/v1/categories", () => {
+describe("getAll /api/v1/categories", () => {
+  let categoryId;
+
   it("should return test user categories", async () => {
+    expect.assertions(2);
+
     const result = await request(app)
       .get("/api/v1/categories")
-      .set("Authorization",`Bearer ${token}`);
+      .set("Authorization", `Bearer ${token}`);
     expect(result.statusCode).toEqual(200);
-    expect(!!result.body.id);
+    expect(result.body.rowCount).not.toEqual(0);
+
+    categoryId = result.body.rows[0].id;
+  });
+
+  it("getOne should return the test user category", async () => {
+    expect.assertions(2);
+
+    const result = await request(app)
+      .get(`/api/v1/categories/${categoryId}`)
+      .set("Authorization", `Bearer ${token}`);
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.id).toEqual(categoryId);
   });
 });
 
@@ -39,7 +54,7 @@ describe("insert, update and delete categories", () => {
   it("creates category", async () => {
     const result = await request(app)
       .post("/api/v1/categories")
-      .set("Authorization",`Bearer ${token}`)
+      .set("Authorization", `Bearer ${token}`)
       .send({
         name: CATEGORY_NAME,
       });
@@ -49,20 +64,23 @@ describe("insert, update and delete categories", () => {
   });
 
   it("updates category", async () => {
+    expect.assertions(2);
+
     const result = await request(app)
       .put(`/api/v1/categories/${categoryId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         name: UPDATED_NAME,
       });
-      expect(result.statusCode).toEqual(200);
-      expect(result.body.name).toEqual(UPDATED_NAME);
+
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.name).toEqual(UPDATED_NAME);
   });
 
   it("gets a category", async () => {
     const result = await request(app)
       .get(`/api/v1/categories/${categoryId}`)
-      .set("Authorization",`Bearer ${token}`);
+      .set("Authorization", `Bearer ${token}`);
     expect(result.statusCode).toEqual(200);
     expect(result.body.name).toEqual(UPDATED_NAME);
   });
@@ -70,7 +88,7 @@ describe("insert, update and delete categories", () => {
   it("deletes category", async () => {
     const result = await request(app)
       .delete(`/api/v1/categories/${categoryId}`)
-      .set("Authorization",`Bearer ${token}`);
+      .set("Authorization", `Bearer ${token}`);
     expect(result.statusCode).toEqual(204);
   });
 });
