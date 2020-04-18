@@ -34,6 +34,14 @@ describe("account creation", () => {
     token = result.body.token;
   });
 
+  it("a default category should be created for the new user", async () => {
+    const result = await request(app)
+      .get("/api/v1/categories")
+      .set("Authorization", `Bearer ${token}`);
+    expect(result.statusCode).toEqual(200);
+    expect(result.body.rowCount).toEqual(1);
+  });
+
   it("should login a user", async () => {
     const result = await request(app).post("/api/v1/login").send({
       email: TEST_EMAIL,

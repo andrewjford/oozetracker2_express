@@ -6,7 +6,6 @@ import models from "../models/models";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mailer from "../services/mailer";
-import CategoryModel from "../models/CategoryModel";
 import path from "path";
 
 const AccountController = {
@@ -97,11 +96,9 @@ const AccountController = {
           return res.status(500).send({ message: "Error sending email." });
         });
 
-      CategoryModel.create({
-        body: {
-          name: "Groceries",
-        },
-        accountId: account.id,
+      await models.Category.create({
+        name: "Groceries",
+        account_id: account.id,
       });
 
       const tokenExpiration = 24 * 60 * 60;
