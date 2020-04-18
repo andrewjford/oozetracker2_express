@@ -10,6 +10,7 @@ const models = {
   VerificationToken: sequelize.import("./VerificationToken"),
   Category: sequelize.import("./Category"),
   Expense: sequelize.import("./Expense"),
+  Revenue: sequelize.import("./Revenue"),
 };
 
 Object.keys(models).forEach((key) => {
