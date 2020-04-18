@@ -11,6 +11,7 @@ import {
 } from "../services/rateLimitMiddleware";
 import VerificationTokenController from "../controllers/VerificationTokenController";
 import requestValidation from "../services/requestValidation";
+import { RevenueController } from "src/controllers/RevenueController";
 
 const router = express.Router();
 
@@ -114,6 +115,12 @@ router.get(
   "/api/v1/reports/expenseSuggestions",
   authMiddleware.validateToken,
   ExpenseController.getExpenseSuggestions
+);
+
+router.post(
+  "/api/v1/revenue",
+  authMiddleware.validateToken,
+  RevenueController.create
 );
 
 export default router;

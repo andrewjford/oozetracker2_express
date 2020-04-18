@@ -1,16 +1,6 @@
 import Sequelize from "sequelize";
 
-class Revenue extends Sequelize.Model {
-  public associate(models) {
-    Revenue.belongsTo(models.Account, {
-      foreignKey: {
-        name: "account_id",
-        allowNull: false,
-      },
-      onDelete: "CASCADE",
-    });
-  }
-}
+class Revenue extends Sequelize.Model {}
 
 const getRevenue = (sequelize, DataTypes) => {
   Revenue.init(
@@ -28,6 +18,17 @@ const getRevenue = (sequelize, DataTypes) => {
       modelName: "Revenue",
     }
   );
+
+  //@ts-ignore
+  Revenue.associate = (models) => {
+    Revenue.belongsTo(models.Account, {
+      foreignKey: {
+        name: "account_id",
+        allowNull: false,
+      },
+      onDelete: "CASCADE",
+    });
+  };
 
   return Revenue;
 };
