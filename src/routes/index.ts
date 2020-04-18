@@ -11,7 +11,7 @@ import {
 } from "../services/rateLimitMiddleware";
 import VerificationTokenController from "../controllers/VerificationTokenController";
 import requestValidation from "../services/requestValidation";
-import { RevenueController } from "src/controllers/RevenueController";
+import { RevenueController } from "../controllers/RevenueController";
 
 const router = express.Router();
 
