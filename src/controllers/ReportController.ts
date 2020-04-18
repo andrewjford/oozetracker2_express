@@ -1,6 +1,6 @@
 import db from "../services/dbService";
 
-const Report = {
+export const ReportController = {
   async getMonthly(req, res) {
     const requestedMonth = new Date(req.body.year, req.body.month);
     const nextMonth = new Date(req.body.year, req.body.month);
@@ -19,7 +19,7 @@ const Report = {
     const values = [
       `${requestedMonth.getFullYear()}-${requestedMonth.getMonth() + 1}-01`,
       `${nextMonth.getFullYear()}-${nextMonth.getMonth() + 1}-01`,
-      req.accountId
+      req.accountId,
     ];
 
     try {
@@ -28,13 +28,11 @@ const Report = {
         rows,
         rowCount,
         month: req.body.month,
-        year: req.body.year
+        year: req.body.year,
       });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
     }
-  }
+  },
 };
-
-export default Report;

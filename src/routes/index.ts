@@ -1,13 +1,13 @@
 import express from "express";
 import ExpenseController from "../controllers/ExpenseController";
 import CategoryController from "../controllers/CategoryController";
-import Report from "../controllers/Report";
+import { ReportController } from "../controllers/ReportController";
 import AccountController from "../controllers/AccountController";
 import authMiddleware from "../services/authMiddleware";
 import {
   apiRegisterLimiter,
   apiLoginLimiter,
-  fiveAttemptsLimiter
+  fiveAttemptsLimiter,
 } from "../services/rateLimitMiddleware";
 import VerificationTokenController from "../controllers/VerificationTokenController";
 import requestValidation from "../services/requestValidation";
@@ -108,7 +108,7 @@ router.get(
 router.post(
   "/api/v1/reports/monthly",
   authMiddleware.validateToken,
-  Report.getMonthly
+  ReportController.getMonthly
 );
 router.get(
   "/api/v1/reports/expenseSuggestions",
