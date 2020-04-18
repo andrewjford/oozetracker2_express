@@ -1,4 +1,3 @@
-import CategoryModel from "../models/CategoryModel";
 import models from "../models/models";
 import moment from "moment";
 
@@ -84,8 +83,14 @@ const CategoryController = {
 
   async delete(req, res) {
     try {
-      const { rows } = await CategoryModel.delete(req);
-      if (!rows[0]) {
+      const destroyedCount = await models.Category.destroy({
+        where: {
+          id: req.params.id,
+          account_id: req.accountId,
+        },
+      });
+
+      if (destroyedCount === 0) {
         return res.status(404).send({ message: "category not found" });
       }
       return res.status(204).send({ message: "deleted" });
