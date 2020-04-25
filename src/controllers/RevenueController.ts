@@ -16,4 +16,21 @@ export const RevenueController = {
         return res.status(500).send({ message: "Internal Server error." });
       });
   },
+
+  async getAll(req, res) {
+    return models.Revenue.findAll({
+      where: {
+        account_id: req.accountId,
+      },
+    })
+      .then((result) => {
+        return res.status(200).send({
+          rows: result,
+          rowCount: result.length,
+        });
+      })
+      .catch((error) => {
+        return res.status(400).send(error);
+      });
+  },
 };

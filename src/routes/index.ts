@@ -117,8 +117,14 @@ router.get(
   ExpenseController.getExpenseSuggestions
 );
 
+router.get(
+  "/api/v1/revenues",
+  authMiddleware.validateToken,
+  RevenueController.getAll
+);
+
 router.post(
-  "/api/v1/revenue",
+  "/api/v1/revenues",
   authMiddleware.validateToken,
   RevenueController.create
 );
