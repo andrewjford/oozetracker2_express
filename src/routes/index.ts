@@ -117,16 +117,30 @@ router.get(
   ExpenseController.getExpenseSuggestions
 );
 
+router.post(
+  "/api/v1/revenues",
+  authMiddleware.validateToken,
+  RevenueController.create
+);
 router.get(
   "/api/v1/revenues",
   authMiddleware.validateToken,
   RevenueController.getAll
 );
-
-router.post(
-  "/api/v1/revenues",
+router.get(
+  "/api/v1/revenues/:id",
   authMiddleware.validateToken,
-  RevenueController.create
+  RevenueController.getOne
+);
+router.put(
+  "/api/v1/revenues/:id",
+  authMiddleware.validateToken,
+  RevenueController.update
+);
+router.delete(
+  "/api/v1/revenues/:id",
+  authMiddleware.validateToken,
+  RevenueController.delete
 );
 
 export default router;
