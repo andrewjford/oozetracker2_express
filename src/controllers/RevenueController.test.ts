@@ -44,7 +44,7 @@ describe("insert, update and delete revenues", () => {
   });
 
   it("updates revenue", async () => {
-    expect.assertions(2);
+    expect.assertions(3);
 
     const result = await request(app)
       .put(`/api/v1/revenues/${revenueId}`)
@@ -56,6 +56,7 @@ describe("insert, update and delete revenues", () => {
 
     expect(result.statusCode).toEqual(200);
     expect(result.body.description).toEqual(UPDATED_DESCRIPTION);
+    expect(result.body.amount).toEqual(UPDATED_AMOUNT.toFixed(2));
   });
 
   it("gets a revenue", async () => {
