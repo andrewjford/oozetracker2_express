@@ -56,6 +56,7 @@ const ExpenseModel = {
       "id",
       "account_id",
       "category_id",
+      ["created_at", "createdAt"],
     ];
 
     return models.Expense.findAll({
