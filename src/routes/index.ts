@@ -21,6 +21,11 @@ router.get("/api/v1/ping", apiLoginLimiter, (req, res) => {
 
 router.post("/api/v1/register", apiRegisterLimiter, AccountController.create);
 router.post("/api/v1/login", apiLoginLimiter, AccountController.login);
+router.post(
+  "/api/v1/resetpassword",
+  apiLoginLimiter,
+  AccountController.resetPassword
+);
 router.get(
   "/api/v1/verification",
   fiveAttemptsLimiter,

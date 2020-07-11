@@ -39,6 +39,20 @@ const AccountController = {
     }
   },
 
+  async resetPassword(req, res) {
+    const user = await models.Account.findOne({
+      where: { email: req.email, isVerified: true },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ code: "AAA", message: "No user found with given email." });
+    } else {
+      // fire off mailer with link and unique code
+    }
+  },
+
   async getOne(req, res) {
     const user = await models.Account.findOne({
       where: { id: req.accountId },
